@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import loadingSpin from '@/components/LoadingSpin.vue'
+import loadingSpin from '../LoadingSpin.vue'
 
 export default {
     components: {

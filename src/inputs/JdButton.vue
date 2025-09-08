@@ -1,9 +1,7 @@
 <template>
-    <div
-        class="jd-button"
-        :title="title"
-        :class="`${small ? 'small' : 'normal'}`"
-    >
+    <div class="jd-button" :title="title" :class="`${small ? 'small' : 'normal'}`">
+        <LoadingSpin :borderRadius="small ? 0.3 : 0.4" :scale="small ? 0.7 : 1" v-if="spin" />
+
         <div ref="btn" class="btn" :class="`btn${tipo}`">
             <!--:style="{ backgroundColor: `var(--${backColor})` }"
              @mouseenter="handleMouseEnter()"
@@ -19,7 +17,12 @@
 </template>
 
 <script>
+import LoadingSpin from '../LoadingSpin.vue'
+
 export default {
+    components: {
+        LoadingSpin
+    },
     props: {
         // backColor: { type: String, default: 'bg-color2' },
         // color: { type: String, default: 'text-color' },
@@ -47,20 +50,24 @@ export default {
         // },
         // darkenColor(color) {
         //     const rgb = color.match(/\d+/g);
+
         //     if (rgb) {
         //         let r = parseInt(rgb[0]) * 0.90; // Reducir brillo en un 10%
         //         let g = parseInt(rgb[1]) * 0.90;
         //         let b = parseInt(rgb[2]) * 0.90;
+
         //         // Asegurar que no sea menor que 0 y convertir a entero
         //         r = Math.max(0, Math.floor(r));
         //         g = Math.max(0, Math.floor(g));
         //         b = Math.max(0, Math.floor(b));
+
         //         return `rgb(${r}, ${g}, ${b})`;
         //     }
+
         //     return color;
         // }
     },
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -89,7 +96,7 @@ export default {
         border: solid 1px var(--primary-color);
         background-color: var(--primary-color);
 
-        * {
+        *{
             color: white;
         }
 
@@ -102,7 +109,7 @@ export default {
         background-color: var(--bg-color);
         border: solid 1px var(--primary-color);
 
-        * {
+        *{
             color: var(--primary-color);
         }
 
@@ -116,7 +123,7 @@ export default {
         border: solid 1px var(--bg-color);
         padding: calc(0.5rem - 2px) 0.6rem !important;
 
-        * {
+        *{
             color: var(--primary-color);
         }
 
