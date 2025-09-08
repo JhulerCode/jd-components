@@ -2,5 +2,9 @@
     "name": "jd-components",
     "version": "1.0.0",
     "main": "src/index.js",
+    "module": "src/index.js",
+    "exports": {
+        ".": "./src/index.js"
+    },
     "license": "MIT"
 }
