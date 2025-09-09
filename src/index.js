@@ -1,5 +1,5 @@
 import JdButton from './inputs/JdButton.vue'
-import JdCheckbox from './inputs/JdCheckbox.vue'
+import JdCheckBox from './inputs/JdCheckBox.vue'
 import JdInput from './inputs/JdInput.vue'
 import JdInputFile from './inputs/JdRadio.vue'
 import JdInputPassword from './inputs/JdInputPassword.vue'
@@ -21,7 +21,7 @@ import LoadingSpin from './LoadingSpin.vue'
 
 export {
     JdButton,
-    JdCheckbox,
+    JdCheckBox,
     JdInput,
     JdInputFile,
     JdInputPassword,

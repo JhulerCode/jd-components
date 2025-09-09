@@ -47,8 +47,8 @@
 </template>
 
 <script>
-// import { useAuth } from '@/pinia/auth'
-// import dayjs from 'dayjs'
+import { useAuth } from '@/pinia/auth'
+import dayjs from 'dayjs'
 
 export default {
     props: {
