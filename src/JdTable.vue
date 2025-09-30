@@ -454,9 +454,7 @@
                                 <template v-if="column.format == 'img'">
                                     <div class="img-box" v-if="a[column.id]">
                                         <img
-                                            :src="`${column.host}/${
-                                                a[column.id]
-                                            }`"
+                                            :src="a[column.id]"
                                             :alt="a[column.id]"
                                         />
                                     </div>
