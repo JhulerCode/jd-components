@@ -371,7 +371,7 @@
                                                           column.prop
                                                       )
                                                   ).format(
-                                                      `${useAuth.usuario.format_date} HH:mm:ss`
+                                                      `${useAuth.usuario.format_date} HH:mm`
                                                   )
                                                 : ''
                                         }}
@@ -380,7 +380,7 @@
                                         {{
                                             a[column.id]
                                                 ? dayjs(a[column.id]).format(
-                                                      `${useAuth.usuario.format_date} HH:mm:ss`
+                                                      `${useAuth.usuario.format_date} HH:mm`
                                                   )
                                                 : ''
                                         }}
