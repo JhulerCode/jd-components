@@ -64,7 +64,7 @@ export default {
                 }
             }
 
-            this.$emit('anulado', send.item)
+            this.$emit('anulado', res.data)
             this.useModals.show.mAnular = false
         },
     },
