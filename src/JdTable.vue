@@ -304,6 +304,13 @@
                                         "
                                     />
                                 </template>
+
+                                <template v-if="column.type == 'longtext'">
+                                    <JdTextArea
+                                        v-model="a[column.id]"
+                                        :disabled="inputsDisabled"
+                                    />
+                                </template>
                             </template>
 
                             <template v-else-if="column.format">
@@ -371,7 +378,7 @@
                                                           column.prop
                                                       )
                                                   ).format(
-                                                      `${useAuth.usuario.format_date} HH:mm`
+                                                      `${useAuth.usuario.format_date} HH:mm:ss`
                                                   )
                                                 : ''
                                         }}
@@ -380,7 +387,7 @@
                                         {{
                                             a[column.id]
                                                 ? dayjs(a[column.id]).format(
-                                                      `${useAuth.usuario.format_date} HH:mm`
+                                                      `${useAuth.usuario.format_date} HH:mm:ss`
                                                   )
                                                 : ''
                                         }}
@@ -454,7 +461,9 @@
                                 <template v-if="column.format == 'img'">
                                     <div class="img-box" v-if="a[column.id]">
                                         <img
-                                            :src="a[column.id]"
+                                            :src="`${column.host}/${
+                                                a[column.id]
+                                            }`"
                                             :alt="a[column.id]"
                                         />
                                     </div>
@@ -523,6 +532,7 @@ import JdInput from './inputs/JdInput.vue';
 import JdCheckBox from './inputs/JdCheckBox.vue';
 import JdButton from './inputs/JdButton.vue';
 import JdSelect from './inputs/JdSelect.vue';
+import JdTextArea from './inputs/JdTextArea.vue';
 
 import { useAuth } from '@/pinia/auth';
 import { useModals } from '@/pinia/modals';
@@ -537,6 +547,7 @@ export default {
         JdCheckBox,
         JdButton,
         JdSelect,
+        JdTextArea,
     },
     props: {
         name: { type: String },
