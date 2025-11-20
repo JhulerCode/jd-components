@@ -1191,7 +1191,7 @@ export default {
     max-height: 15rem;
     overflow-y: auto;
     background-color: var(--bg-color);
-    z-index: 2;
+    z-index: 3;
     box-shadow: 0 0 0.5rem 0.1rem var(--shadow-color);
     border-radius: 0.3rem;
 
