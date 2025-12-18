@@ -29,5 +29,8 @@ jobs:
       - name: Build package
         run: npm run build --if-present
 
+      - name: Limpiar auth residual
+        run: npm config delete //registry.npmjs.org/:_authToken || true
+
       - name: Publish to npm
         run: npm publish --provenance
