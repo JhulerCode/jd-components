@@ -21,7 +21,7 @@ import LoadingSpin from '../LoadingSpin.vue'
 
 export default {
     components: {
-        LoadingSpin
+        LoadingSpin,
     },
     props: {
         // backColor: { type: String, default: 'bg-color2' },
@@ -50,20 +50,16 @@ export default {
         // },
         // darkenColor(color) {
         //     const rgb = color.match(/\d+/g);
-
         //     if (rgb) {
         //         let r = parseInt(rgb[0]) * 0.90; // Reducir brillo en un 10%
         //         let g = parseInt(rgb[1]) * 0.90;
         //         let b = parseInt(rgb[2]) * 0.90;
-
         //         // Asegurar que no sea menor que 0 y convertir a entero
         //         r = Math.max(0, Math.floor(r));
         //         g = Math.max(0, Math.floor(g));
         //         b = Math.max(0, Math.floor(b));
-
         //         return `rgb(${r}, ${g}, ${b})`;
         //     }
-
         //     return color;
         // }
     },
@@ -96,7 +92,7 @@ export default {
         border: solid 1px var(--primary-color);
         background-color: var(--primary-color);
 
-        *{
+        * {
             color: white;
         }
 
@@ -109,7 +105,7 @@ export default {
         background-color: var(--bg-color);
         border: solid 1px var(--primary-color);
 
-        *{
+        * {
             color: var(--primary-color);
         }
 
@@ -123,7 +119,7 @@ export default {
         border: solid 1px var(--bg-color);
         padding: calc(0.5rem - 2px) 0.6rem !important;
 
-        *{
+        * {
             color: var(--primary-color);
         }
 

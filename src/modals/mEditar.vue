@@ -3,7 +3,12 @@
         <div class="container-datos">
             <div>
                 <p>Propiedad para actualizar</p>
-                <JdSelect v-model="modal.nuevo.prop" :lista="modal.cols" mostrar="title" @elegir="setAtributo" />
+                <JdSelect
+                    v-model="modal.nuevo.prop"
+                    :lista="modal.cols1"
+                    mostrar="title"
+                    @elegir="setAtributo"
+                />
             </div>
 
             <div v-if="modal.elegido?.id">
@@ -11,10 +16,20 @@
 
                 <JdInput v-model="modal.nuevo.val" v-if="modal.elegido.type == 'text'" />
 
-                <JdInput v-model="modal.nuevo.val" type="number" v-if="modal.elegido.type == 'number'" />
+                <JdInput
+                    v-model="modal.nuevo.val"
+                    type="number"
+                    v-if="modal.elegido.type == 'number'"
+                />
 
-                <JdSelect v-model="modal.nuevo.val" :lista="modal.elegido.lista || []"
-                    v-if="modal.elegido.type == 'select'" />
+                <JdSelect
+                    :lista="modal.elegido.lista || []"
+                    :mostrar="modal.elegido.mostrar || 'nombre'"
+                    :loaded="typeof colsMap[modal.elegido.id].reload == 'function'"
+                    @reload="runMethod(modal.elegido)"
+                    v-model="modal.nuevo.val"
+                    v-if="modal.elegido.type == 'select'"
+                />
 
                 <JdSwitch v-model="modal.nuevo.val" v-if="modal.elegido.type == 'boolean'" />
             </div>
@@ -28,6 +43,7 @@ import JdModal from '../JdModal.vue'
 import JdInput from '../inputs/JdInput.vue'
 import JdSelect from '../inputs/JdSelect.vue'
 import JdSwitch from '../inputs/JdSwitch.vue'
+// import { JdModal, JdInput, JdSelect, JdSwitch } from '@jhuler/components';
 
 import { useModals } from '@/pinia/modals'
 import { useAuth } from '@/pinia/auth'
@@ -47,16 +63,24 @@ export default {
         useAuth: useAuth(),
         useModals: useModals(),
 
-        buttons: [
-            { text: 'Actualizar', action: 'modificar', show: true },
-        ],
+        buttons: [{ text: 'Actualizar', action: 'modificar', show: true }],
     }),
+    computed: {
+        colsMap() {
+            return this.modal.cols.reduce((obj, a) => ((obj[a.id] = a), obj), {})
+        },
+    },
     created() {
         this.modal = this.useModals.mEditar
+
+        this.modal.cols1 = JSON.parse(
+            JSON.stringify(this.modal.cols.filter((a) => a.editable == true))
+        )
     },
     methods: {
         setAtributo(item) {
-            this.modal.elegido = this.modal.cols.find(a => a.id == item.id)
+            // this.modal.elegido = this.modal.cols1.find((a) => a.id == item.id)
+            this.modal.elegido = item
             this.modal.nuevo.val = null
         },
         checkDatos() {
@@ -72,9 +96,11 @@ export default {
         shapeDatos() {
             this.modal.nuevo.id = 'bulk'
             this.modal.nuevo.ids = this.modal.ids
-            
+
             if (this.modal.elegido.lista) {
-                this.modal.nuevo.val1 = this.modal.elegido.lista.find(a => a.id == this.modal.nuevo.val)
+                this.modal.nuevo.val1 = this.modal.elegido.lista.find(
+                    (a) => a.id == this.modal.nuevo.val
+                )
             }
         },
         async modificar() {
@@ -90,7 +116,12 @@ export default {
             this.$emit('updated', this.modal.nuevo)
             this.useModals.show.mEditar = false
         },
-    }
+
+        async runMethod(item) {
+            item.lista = await this.colsMap[item.id].reload()
+            this.colsMap[item.id].lista = item.lista
+        },
+    },
 }
 </script>
 

@@ -1,8 +1,5 @@
 <template>
-    <article
-        class="jd-table"
-        :style="{ height: height, maxHeight: maxHeight, width: width }"
-    >
+    <article class="jd-table" :style="{ height: height, maxHeight: maxHeight, width: width }">
         <div
             class="container-top"
             v-if="
@@ -50,9 +47,7 @@
             <div class="container-config">
                 <JdButton
                     :icon="
-                        rowSelectable1
-                            ? 'fa-solid fa-square-check'
-                            : 'fa-regular fa-square-check'
+                        rowSelectable1 ? 'fa-solid fa-square-check' : 'fa-regular fa-square-check'
                     "
                     tipo="2"
                     @click="toogleSelectItems()"
@@ -96,17 +91,11 @@
         </div>
 
         <div class="container-table" :style="{ minHeight: minHeight }">
-            <table
-                ref="jdtable"
-                :class="{ 'table-cols-resizable': columnsResizable }"
-            >
+            <table ref="jdtable" :class="{ 'table-cols-resizable': columnsResizable }">
                 <colgroup>
                     <col v-if="colNro" style="width: 2rem" />
 
-                    <col
-                        v-if="colAct && !rowSelectable1"
-                        :style="`width: ${colActWidth}`"
-                    />
+                    <col v-if="colAct && !rowSelectable1" :style="`width: ${colActWidth}`" />
 
                     <col
                         v-for="a in columnsSorted"
@@ -144,10 +133,7 @@
                             @dragend="columnDragEnd" -->
 
                             <div
-                                :class="[
-                                    'th-vfor-title',
-                                    { 'th-vfor-sortable': a.sort },
-                                ]"
+                                :class="['th-vfor-title', { 'th-vfor-sortable': a.sort }]"
                                 @click="sortData(a)"
                             >
                                 <i
@@ -222,10 +208,7 @@
 
                             <template v-else-if="column.input">
                                 <template v-if="column.type == 'text'">
-                                    <JdInput
-                                        v-model="a[column.id]"
-                                        :disabled="inputsDisabled"
-                                    />
+                                    <JdInput v-model="a[column.id]" :disabled="inputsDisabled" />
                                 </template>
 
                                 <template v-if="column.type == 'number'">
@@ -236,20 +219,12 @@
                                         :disabled="inputsDisabled"
                                         @change="
                                             column.onchange
-                                                ? $emit(
-                                                      'onChange',
-                                                      column.onchange,
-                                                      a
-                                                  )
+                                                ? $emit('onChange', column.onchange, a)
                                                 : null
                                         "
                                         @input="
                                             column.oninput
-                                                ? $emit(
-                                                      'onInput',
-                                                      column.oninput,
-                                                      a
-                                                  )
+                                                ? $emit('onInput', column.oninput, a)
                                                 : null
                                         "
                                     />
@@ -279,11 +254,7 @@
                                         :mostrar="column.mostrar"
                                         @elegir="
                                             column.onchange
-                                                ? $emit(
-                                                      'onChange',
-                                                      column.onchange,
-                                                      a
-                                                  )
+                                                ? $emit('onChange', column.onchange, a)
                                                 : null
                                         "
                                     />
@@ -295,21 +266,14 @@
                                         :disabled="inputsDisabled"
                                         @change="
                                             column.onchange
-                                                ? $emit(
-                                                      'onChange',
-                                                      column.onchange,
-                                                      a
-                                                  )
+                                                ? $emit('onChange', column.onchange, a)
                                                 : null
                                         "
                                     />
                                 </template>
 
                                 <template v-if="column.type == 'longtext'">
-                                    <JdTextArea
-                                        v-model="a[column.id]"
-                                        :disabled="inputsDisabled"
-                                    />
+                                    <JdTextArea v-model="a[column.id]" :disabled="inputsDisabled" />
                                 </template>
                             </template>
 
@@ -344,14 +308,8 @@
                                     <template v-if="column.prop">
                                         {{
                                             getNestedProp(a, column.prop)
-                                                ? dayjs(
-                                                      getNestedProp(
-                                                          a,
-                                                          column.prop
-                                                      )
-                                                  ).format(
-                                                      useAuth.usuario
-                                                          .format_date
+                                                ? dayjs(getNestedProp(a, column.prop)).format(
+                                                      useAuth.usuario.format_date
                                                   )
                                                 : ''
                                         }}
@@ -360,8 +318,7 @@
                                         {{
                                             a[column.id]
                                                 ? dayjs(a[column.id]).format(
-                                                      useAuth.usuario
-                                                          .format_date
+                                                      useAuth.usuario.format_date
                                                   )
                                                 : ''
                                         }}
@@ -372,12 +329,7 @@
                                     <template v-if="column.prop">
                                         {{
                                             getNestedProp(a, column.prop)
-                                                ? dayjs(
-                                                      getNestedProp(
-                                                          a,
-                                                          column.prop
-                                                      )
-                                                  ).format(
+                                                ? dayjs(getNestedProp(a, column.prop)).format(
                                                       `${useAuth.usuario.format_date} HH:mm:ss`
                                                   )
                                                 : ''
@@ -396,12 +348,7 @@
 
                                 <template v-if="column.format == 'number'">
                                     <template v-if="column.prop">
-                                        {{
-                                            redondear(
-                                                getNestedProp(a, column.prop),
-                                                0
-                                            )
-                                        }}
+                                        {{ redondear(getNestedProp(a, column.prop), 0) }}
                                     </template>
                                     <template v-else>
                                         {{ redondear(a[column.id], 0) }}
@@ -410,11 +357,7 @@
 
                                 <template v-if="column.format == 'decimal'">
                                     <template v-if="column.prop">
-                                        {{
-                                            redondear(
-                                                getNestedProp(a, column.prop)
-                                            )
-                                        }}
+                                        {{ redondear(getNestedProp(a, column.prop)) }}
                                     </template>
                                     <template v-else>
                                         {{ redondear(a[column.id]) }}
@@ -435,25 +378,13 @@
                                             v-if="getNestedProp(a, column.prop)"
                                         >
                                             {{ column.moneda }}
-                                            {{
-                                                redondear(
-                                                    getNestedProp(
-                                                        a,
-                                                        column.prop
-                                                    )
-                                                )
-                                            }}
+                                            {{ redondear(getNestedProp(a, column.prop)) }}
                                         </div>
                                     </template>
                                     <template v-else>
-                                        <div
-                                            class="currency-box"
-                                            v-if="a[column.id]"
-                                        >
+                                        <div class="currency-box" v-if="a[column.id]">
                                             <span>{{ column.moneda }}</span>
-                                            <span>{{
-                                                redondear(a[column.id])
-                                            }}</span>
+                                            <span>{{ redondear(a[column.id]) }}</span>
                                         </div>
                                     </template>
                                 </template>
@@ -461,9 +392,7 @@
                                 <template v-if="column.format == 'img'">
                                     <div class="img-box" v-if="a[column.id]">
                                         <img
-                                            :src="`${column.host}/${
-                                                a[column.id]
-                                            }`"
+                                            :src="`${column.host}/${a[column.id]}`"
                                             :alt="a[column.id]"
                                         />
                                     </div>
@@ -491,18 +420,14 @@
 
         <div class="resumen">
             <small>
-                <template v-if="txtBuscar"
-                    >{{ datosFiltrados.length }} de</template
-                >
+                <template v-if="txtBuscar">{{ datosFiltrados.length }} de</template>
                 <template v-if="showResumen"
                     >{{ cantidadRegistros }} {{ mensajeRegistros }}</template
                 >
             </small>
             <template v-if="cantidadSeleccionados > 0">
                 <small>|</small>
-                <small>
-                    {{ cantidadSeleccionados }} {{ mensajeSeleccion }}
-                </small>
+                <small> {{ cantidadSeleccionados }} {{ mensajeSeleccion }} </small>
             </template>
         </div>
 
@@ -514,10 +439,7 @@
                 :id="'options-case-' + this.name"
             >
                 <template v-for="(b, i) in rowOptions" :key="i">
-                    <li
-                        @click="selectOption(b)"
-                        v-if="verifyPermiso(optionsCaseItem, b)"
-                    >
+                    <li @click="selectOption(b)" v-if="verifyPermiso(optionsCaseItem, b)">
                         <i :class="b.icon"></i>
                         <span>{{ b.label }}</span>
                     </li>
@@ -528,18 +450,18 @@
 </template>
 
 <script>
-import JdInput from './inputs/JdInput.vue';
-import JdCheckBox from './inputs/JdCheckBox.vue';
-import JdButton from './inputs/JdButton.vue';
-import JdSelect from './inputs/JdSelect.vue';
-import JdTextArea from './inputs/JdTextArea.vue';
+import JdInput from './inputs/JdInput.vue'
+import JdCheckBox from './inputs/JdCheckBox.vue'
+import JdButton from './inputs/JdButton.vue'
+import JdSelect from './inputs/JdSelect.vue'
+import JdTextArea from './inputs/JdTextArea.vue'
 
-import { useAuth } from '@/pinia/auth';
-import { useModals } from '@/pinia/modals';
+import { useAuth } from '@/pinia/auth'
+import { useModals } from '@/pinia/modals'
 
-import { redondear, downloadExcel } from '@/utils/mine';
+import { redondear, downloadExcel } from '@/utils/mine'
 
-import dayjs from 'dayjs';
+import dayjs from 'dayjs'
 
 export default {
     components: {
@@ -600,130 +522,118 @@ export default {
     }),
     computed: {
         columnsSorted() {
-            const cols = [...this.columns];
-            return cols.sort((a, b) => a.orden - b.orden);
+            const cols = [...this.columns]
+            return cols.sort((a, b) => a.orden - b.orden)
         },
         datosFiltrados() {
-            if (this.seeker == false) return this.datos;
-            const searchTermLowerCase = this.txtBuscar.toLowerCase();
+            if (this.seeker == false) return this.datos
+            const searchTermLowerCase = this.txtBuscar.toLowerCase()
             return this.datos.filter((a) => {
                 return this.seekProperties.some((b) => {
-                    const propertyValue = this.getNestedProp(a, b);
-                    return propertyValue
-                        .toString()
-                        .toLowerCase()
-                        .includes(searchTermLowerCase);
-                });
-            });
+                    const propertyValue = this.getNestedProp(a, b)
+                    return propertyValue.toString().toLowerCase().includes(searchTermLowerCase)
+                })
+            })
         },
         seekProperties() {
-            return this.columns
-                .filter((a) => a.seek)
-                .map((b) => b.prop || b.id);
+            return this.columns.filter((a) => a.seek).map((b) => b.prop || b.id)
         },
         seekString() {
             const seekTitles = this.seekProperties.map((a) => {
-                const col = this.columns.find((b) => b.prop == a || b.id == a);
-                return col ? col.title : '';
-            });
+                const col = this.columns.find((b) => b.prop == a || b.id == a)
+                return col ? col.title : ''
+            })
             if (seekTitles.length > 1) {
-                const lastTitle = seekTitles.pop();
-                return (
-                    'Buscar por ' + seekTitles.join(', ') + ' y ' + lastTitle
-                );
+                const lastTitle = seekTitles.pop()
+                return 'Buscar por ' + seekTitles.join(', ') + ' y ' + lastTitle
             } else if (seekTitles.length === 1) {
-                return 'Buscar por ' + seekTitles[0];
+                return 'Buscar por ' + seekTitles[0]
             } else {
-                return '';
+                return ''
             }
         },
         cantidadRegistros() {
-            return this.datos.length;
+            return this.datos.length
         },
         mensajeRegistros() {
-            return this.cantidadRegistros == 1 ? 'registro' : 'registros';
+            return this.cantidadRegistros == 1 ? 'registro' : 'registros'
         },
         cantidadSeleccionados() {
-            return this.datos.filter((a) => a.selected == true).length;
+            return this.datos.filter((a) => a.selected == true).length
         },
         mensajeSeleccion() {
-            return this.cantidadSeleccionados == 1
-                ? 'seleccionado'
-                : 'seleccionados';
+            return this.cantidadSeleccionados == 1 ? 'seleccionado' : 'seleccionados'
         },
     },
     created() {
-        this.rowSelectable1 = this.rowSelectable;
+        this.rowSelectable1 = this.rowSelectable
     },
     methods: {
         getNestedProp(obj, prop) {
-            const result = prop
-                .split('.')
-                .reduce((acc, part) => acc?.[part], obj);
+            const result = prop.split('.').reduce((acc, part) => acc?.[part], obj)
 
-            return result === undefined || result === null ? '' : result;
+            return result === undefined || result === null ? '' : result
         },
         sortData(column, orden) {
-            const { id, prop, sort } = column;
+            const { id, prop, sort } = column
 
-            if (!sort) return;
+            if (!sort) return
 
-            const col = this.columns.find((a) => a.id == id);
+            const col = this.columns.find((a) => a.id == id)
 
             if (orden) {
-                col.sortDirection = orden;
+                col.sortDirection = orden
             } else {
-                col.sortDirection = col.sortDirection == 'asc' ? 'desc' : 'asc';
+                col.sortDirection = col.sortDirection == 'asc' ? 'desc' : 'asc'
             }
 
             for (const a of this.columns) {
-                if (a.id != id) a.sortDirection = null;
+                if (a.id != id) a.sortDirection = null
             }
 
-            this.useAuth.saveTableColumns(this.name, this.columns);
+            this.useAuth.saveTableColumns(this.name, this.columns)
 
             // eslint-disable-next-line vue/no-mutating-props
             this.datos.sort((a, b) => {
-                const valA = this.getNestedProp(a, prop || id);
-                const valB = this.getNestedProp(b, prop || id);
+                const valA = this.getNestedProp(a, prop || id)
+                const valB = this.getNestedProp(b, prop || id)
 
                 if (col.sortDirection === 'asc') {
-                    return valA > valB ? 1 : -1;
+                    return valA > valB ? 1 : -1
                 } else {
-                    return valA < valB ? 1 : -1;
+                    return valA < valB ? 1 : -1
                 }
-            });
+            })
         },
 
         columnResize(event, id) {
-            const startX = event.pageX;
+            const startX = event.pageX
 
-            const columnId = `column-${id}`;
-            const columnElement = this.$refs[columnId][0];
-            const initialWidth = columnElement.offsetWidth;
+            const columnId = `column-${id}`
+            const columnElement = this.$refs[columnId][0]
+            const initialWidth = columnElement.offsetWidth
 
             const handleMouseMove = (moveEvent) => {
-                const deltaX = moveEvent.pageX - startX;
-                const newWidth = initialWidth + deltaX;
+                const deltaX = moveEvent.pageX - startX
+                const newWidth = initialWidth + deltaX
 
                 if (newWidth <= 85) {
-                    columnElement.style.width = `85px`;
+                    columnElement.style.width = `85px`
                 } else {
-                    columnElement.style.width = `${newWidth}px`;
+                    columnElement.style.width = `${newWidth}px`
                 }
-            };
+            }
 
             const handleMouseUp = () => {
-                window.removeEventListener('mousemove', handleMouseMove);
-                window.removeEventListener('mouseup', handleMouseUp);
+                window.removeEventListener('mousemove', handleMouseMove)
+                window.removeEventListener('mouseup', handleMouseUp)
 
-                this.columns.find((a) => a.id == id).width =
-                    columnElement.offsetWidth + 'px';
-                this.useAuth.saveTableColumns(this.name, this.columns);
-            };
+                this.columns.find((a) => a.id == id).width = columnElement.offsetWidth + 'px'
+                this.useAuth.saveTableColumns(this.name, this.columns)
+            }
 
-            window.addEventListener('mousemove', handleMouseMove);
-            window.addEventListener('mouseup', handleMouseUp);
+            window.addEventListener('mousemove', handleMouseMove)
+            window.addEventListener('mouseup', handleMouseUp)
         },
 
         // columnDragStart(index, event) {
@@ -753,186 +663,162 @@ export default {
         // },
 
         selectRow(item) {
-            if (this.rowSelectable1 == false) return;
+            if (this.rowSelectable1 == false) return
 
             if (this.rsUno == true) {
                 for (const a of this.datos) {
-                    if (a.id == item.id) continue;
-                    a.selected = false;
+                    if (a.id == item.id) continue
+                    a.selected = false
                 }
 
-                item.selected = !item.selected;
-                this.$emit('rowSelected', item);
+                item.selected = !item.selected
+                this.$emit('rowSelected', item)
             } else {
-                item.selected = !item.selected;
+                item.selected = !item.selected
             }
         },
         selectAll() {
-            for (const a of this.datos) a.selected = true;
+            for (const a of this.datos) a.selected = true
         },
         selectNone() {
-            for (const a of this.datos) a.selected = false;
+            for (const a of this.datos) a.selected = false
         },
 
         toogleSelectItems() {
-            this.rowSelectable1 = !this.rowSelectable1;
+            this.rowSelectable1 = !this.rowSelectable1
 
             if (this.rowSelectable1 == false) {
-                for (const a of this.datos) a.selected = false;
+                for (const a of this.datos) a.selected = false
             }
         },
         downloadData() {
             downloadExcel(
                 this.columnsSorted.filter((a) => a.show),
                 this.datos
-            );
+            )
         },
         openConfigCols() {
             const send = {
                 table: this.name,
                 cols: this.columns,
                 reload: this.reloadAndSort,
-            };
+            }
 
-            this.useModals.setModal(
-                'mConfigCols',
-                'Configurar columnas',
-                null,
-                send,
-                true
-            );
+            this.useModals.setModal('mConfigCols', 'Configurar columnas', null, send, true)
         },
         async reloadAndSort() {
-            await this.reload();
+            await this.reload()
 
-            const column = this.columns.find((a) => a.sortDirection != null);
-            if (column) this.sortData(column, column.sortDirection);
+            const column = this.columns.find((a) => a.sortDirection != null)
+            if (column) this.sortData(column, column.sortDirection)
         },
 
         toogleRowOptions(item) {
-            const previousItem = this.optionsCaseItem;
-            this.hide();
-            if (previousItem.i == item.i) return;
+            const previousItem = this.optionsCaseItem
+            this.hide()
+            if (previousItem.i == item.i) return
 
-            this.optionsCaseItem = item;
-            const screenWidth = window.innerWidth;
-            const screenHeight = window.innerHeight;
+            this.optionsCaseItem = item
+            const screenWidth = window.innerWidth
+            const screenHeight = window.innerHeight
 
             this.$nextTick(() => {
-                const el = document.getElementById('options-case-' + this.name);
+                const el = document.getElementById('options-case-' + this.name)
 
                 setTimeout(() => {
                     const rect = document
                         .getElementById(`button-options-${item.id}`)
-                        .getBoundingClientRect();
-                    const rect2 = el.getBoundingClientRect();
+                        .getBoundingClientRect()
+                    const rect2 = el.getBoundingClientRect()
 
                     if (screenWidth < rect.left + rect2.width) {
-                        el.style.right = `${
-                            screenWidth - rect.right + window.scrollX
-                        }px`;
+                        el.style.right = `${screenWidth - rect.right + window.scrollX}px`
                     } else {
-                        el.style.left = `${rect.left + window.scrollX}px`;
+                        el.style.left = `${rect.left + window.scrollX}px`
                     }
 
                     if (screenHeight < rect.bottom + rect2.height) {
-                        el.style.bottom = `${
-                            screenHeight - rect.top + window.scrollY + 5
-                        }px`;
+                        el.style.bottom = `${screenHeight - rect.top + window.scrollY + 5}px`
                     } else {
-                        el.style.top = `${rect.bottom + window.scrollY + 5}px`;
+                        el.style.top = `${rect.bottom + window.scrollY + 5}px`
                     }
 
-                    document.body.addEventListener(
-                        'click',
-                        this.closeOnOutside
-                    );
-                }, 0);
-            });
+                    document.body.addEventListener('click', this.closeOnOutside)
+                }, 0)
+            })
 
             // setTimeout(() => {
             // }, 10)
         },
         closeOnOutside(event) {
             // this.$nextTick(() => {
-            const el = document.getElementById('options-case-' + this.name);
+            const el = document.getElementById('options-case-' + this.name)
 
             if (el && !el.contains(event.target)) {
-                this.hide();
+                this.hide()
             }
             // })
         },
         hide() {
-            this.optionsCaseItem = {};
-            document.body.removeEventListener('click', this.closeOnOutside);
+            this.optionsCaseItem = {}
+            document.body.removeEventListener('click', this.closeOnOutside)
         },
         selectOption(a) {
-            this.$emit('rowOptionSelected', a.action, this.optionsCaseItem);
-            this.hide();
+            this.$emit('rowOptionSelected', a.action, this.optionsCaseItem)
+            this.hide()
         },
         verifyPermiso(a, b) {
             // Si existe 'ocultar', evaluar condiciones para ocultar
             if (b.ocultar) {
                 for (const prop in b.ocultar) {
-                    const condicion = b.ocultar[prop];
-                    const valorFila = a[prop];
+                    const condicion = b.ocultar[prop]
+                    const valorFila = a[prop]
 
-                    if (valorFila === undefined) continue;
+                    if (valorFila === undefined) continue
 
                     // Caso 1: array
                     if (Array.isArray(condicion)) {
-                        if (condicion.includes(valorFila)) return false; // se oculta
+                        if (condicion.includes(valorFila)) return false // se oculta
                     }
                     // Caso 2: objeto con operador
-                    else if (
-                        typeof condicion === 'object' &&
-                        condicion.op &&
-                        'val' in condicion
-                    ) {
-                        if (
-                            this.comparar(
-                                valorFila,
-                                condicion.op,
-                                condicion.val
-                            )
-                        )
-                            return false;
+                    else if (typeof condicion === 'object' && condicion.op && 'val' in condicion) {
+                        if (this.comparar(valorFila, condicion.op, condicion.val)) return false
                     }
                     // Caso 3: valor simple
                     else {
-                        if (condicion == valorFila) return false; // se oculta
+                        if (condicion == valorFila) return false // se oculta
                     }
                 }
             }
 
             // Si no hay permiso definido, solo dependerá de 'ocultar'
-            if (!b.permiso) return true;
+            if (!b.permiso) return true
 
             // Evaluar permiso si existe
             return Array.isArray(b.permiso)
                 ? this.useAuth.verifyPermiso(...b.permiso)
-                : this.useAuth.verifyPermiso(b.permiso);
+                : this.useAuth.verifyPermiso(b.permiso)
         },
         comparar(a, op, b) {
             switch (op) {
                 case '>':
-                    return a > b;
+                    return a > b
                 case '<':
-                    return a < b;
+                    return a < b
                 case '>=':
-                    return a >= b;
+                    return a >= b
                 case '<=':
-                    return a <= b;
+                    return a <= b
                 case '==':
-                    return a == b;
+                    return a == b
                 case '!=':
-                    return a != b;
+                    return a != b
                 default:
-                    return false;
+                    return false
             }
         },
     },
-};
+}
 </script>
 
 <style lang="scss" scoped>

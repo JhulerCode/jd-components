@@ -230,7 +230,7 @@ export default {
             if (isChanged) {
                 this.$emit(
                     'elegir',
-                    this.lista.find((a) => a[this.id] == id),
+                    this.lista.find((a) => a[this.id] == id)
                 )
             }
 

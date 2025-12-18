@@ -1,15 +1,30 @@
 <template>
     <JdModal modal="mConfigCols" :buttons="buttons" @button-click="(action) => this[action]()">
-        <JdTable :columns="columns" :datos="modal.cols1.sort((a, b) => a.orden - b.orden) || []" :seeker="false" :download="false">
+        <JdTable
+            :columns="columns"
+            :datos="modal.cols1.sort((a, b) => a.orden - b.orden) || []"
+            :seeker="false"
+            :download="false"
+        >
             <template v-slot:cOrden="{ item }">
                 <div class="acts">
-                    <JdButton icon="fa-solid fa-angle-down" :small="true" tipo="2" @click="upDown(item, 1)"
-                        v-if="item.orden < modal.cols1.length - 1" />
+                    <JdButton
+                        icon="fa-solid fa-angle-down"
+                        :small="true"
+                        tipo="2"
+                        @click="upDown(item, 1)"
+                        v-if="item.orden < modal.cols1.length - 1"
+                    />
 
                     <span v-else></span>
 
-                    <JdButton icon="fa-solid fa-angle-up" :small="true" tipo="2" @click="upDown(item, 2)"
-                        v-if="item.orden > 0" />
+                    <JdButton
+                        icon="fa-solid fa-angle-up"
+                        :small="true"
+                        tipo="2"
+                        @click="upDown(item, 2)"
+                        v-if="item.orden > 0"
+                    />
                 </div>
             </template>
 
@@ -83,13 +98,11 @@ export default {
                 title: 'Orden',
                 slot: 'cOrden',
                 width: '5rem',
-                show: true
+                show: true,
             },
         ],
 
-        buttons: [
-            { text: 'Grabar', action: 'grabar', show: true },
-        ],
+        buttons: [{ text: 'Grabar', action: 'grabar', show: true }],
     }),
     created() {
         this.modal = this.useModals.mConfigCols
@@ -104,7 +117,7 @@ export default {
             }
         },
         checkDatos() {
-            if (this.modal.cols1.every(a => a.show == false)) {
+            if (this.modal.cols1.every((a) => a.show == false)) {
                 jmsg('warning', 'Seleccione al menos una columna para mostrar')
                 return true
             }
@@ -114,14 +127,14 @@ export default {
         async grabar() {
             if (this.checkDatos()) return
 
-           // --- ASIGNAR A COLS ORIGINIAL --- //
-            const cols1Map = this.modal.cols1.reduce((obj, a) => (obj[a.id] = a, obj), {})
+            // --- ASIGNAR A COLS ORIGINIAL --- //
+            const cols1Map = this.modal.cols1.reduce((obj, a) => ((obj[a.id] = a), obj), {})
 
             for (const a of this.modal.cols) {
                 Object.assign(a, cols1Map[a.id])
             }
 
-           // --- GUARDAR LAS COLUMNAS EN PINIA --- //
+            // --- GUARDAR LAS COLUMNAS EN PINIA --- //
             this.useAuth.saveTableColumns(this.modal.table, this.modal.cols1)
 
             this.modal.reload()
@@ -136,7 +149,7 @@ export default {
             }
         },
         async upDown(item, k) {
-            const i = this.modal.cols1.findIndex(a => a.id == item.id)
+            const i = this.modal.cols1.findIndex((a) => a.id == item.id)
 
             const o = k == 1 ? item.orden + 1 : item.orden - 1
             const j = k == 1 ? i + 1 : i - 1

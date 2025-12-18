@@ -1,5 +1,8 @@
 <template>
-    <article class="jd-select-query" :style="`grid-template-columns: ${label || icon ? 'auto 1fr' : '1fr'}`">
+    <article
+        class="jd-select-query"
+        :style="`grid-template-columns: ${label || icon ? 'auto 1fr' : '1fr'}`"
+    >
         <div class="left" v-if="label || icon">
             <span v-if="label">{{ label }}</span>
             <i v-if="icon" :class="icon"></i>
@@ -8,7 +11,13 @@
 
         <div class="right" ref="right">
             <div class="se-muestra" :class="{ disabled: disabled }">
-                <input type="search" v-model="txtBuscar" @input="handleInput()" :placeholder="placeholder" v-if="!inputModel">
+                <input
+                    type="search"
+                    v-model="txtBuscar"
+                    @input="handleInput()"
+                    :placeholder="placeholder"
+                    v-if="!inputModel"
+                />
 
                 <div class="text" v-if="inputModel">
                     <span :title="setMostrar()">{{ setMostrar() }}</span>
@@ -19,11 +28,23 @@
                 </div>
             </div>
 
-            <div class="lista-box" ref="lista-box" v-if="isVisible" :class="{ 'lista-is-open': isVisible }">
-                <loadingSpin borderRadius="0.2rem" :shadowBack="false" :rellenar="false" v-if="spin" />
+            <div
+                class="lista-box"
+                ref="lista-box"
+                v-if="isVisible"
+                :class="{ 'lista-is-open': isVisible }"
+            >
+                <loadingSpin
+                    borderRadius="0.2rem"
+                    :shadowBack="false"
+                    :rellenar="false"
+                    v-if="spin"
+                />
 
                 <div v-else>
-                    <div v-if="txtBuscar !== '' && lista.length == 0"><small>Sin resultados</small></div>
+                    <div v-if="txtBuscar !== '' && lista.length == 0">
+                        <small>Sin resultados</small>
+                    </div>
 
                     <ul v-if="txtBuscar !== '' && lista.length > 0">
                         <li v-for="(a, i) in lista" :key="i" @click="elegir(a[id])">
@@ -41,7 +62,7 @@ import loadingSpin from '../LoadingSpin.vue'
 
 export default {
     components: {
-        loadingSpin
+        loadingSpin,
     },
     props: {
         modelValue: [String, Number],
@@ -104,8 +125,7 @@ export default {
                     document.addEventListener('click', this.handleClickOutside)
                     window.addEventListener('keydown', this.handleEscapeKey)
                 }, 0)
-            }
-            else {
+            } else {
                 this.ocultar()
             }
         },
@@ -120,8 +140,7 @@ export default {
             if (id) {
                 if (this.lista.length > 0) {
                     this.inputModel = id
-                }
-                else {
+                } else {
                     const inter = setInterval(() => {
                         if (this.lista.length > 0) {
                             this.inputModel = id
@@ -135,7 +154,10 @@ export default {
         elegir(id) {
             this.inputModel = id
 
-            this.$emit('elegir', this.lista.find(a => a[this.id] == id))
+            this.$emit(
+                'elegir',
+                this.lista.find((a) => a[this.id] == id)
+            )
 
             this.ocultar()
         },
@@ -163,19 +185,18 @@ export default {
         },
         setMostrar() {
             if (this.inputModel) {
-                const send = this.lista.find(a => a[this.id] == this.inputModel)
+                const send = this.lista.find((a) => a[this.id] == this.inputModel)
 
                 if (send) {
                     return send[this.mostrar]
-                }
-                else {
+                } else {
                     return ''
                 }
             }
         },
         async search() {
             this.$emit('search', this.txtBuscar)
-        }
+        },
     },
 }
 </script>

@@ -56,7 +56,7 @@ export default {
                 this.useVistas[this.modal.vista][this.modal.array]
             ) {
                 const toMod = this.useVistas[this.modal.vista][this.modal.array].find(
-                    (a) => a.id == this.modal.item.id,
+                    (a) => a.id == this.modal.item.id
                 )
                 if (toMod) {
                     toMod.estado = 0

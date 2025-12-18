@@ -21,7 +21,7 @@ export default {
         scale: { type: [String, Number], default: 1 },
         borderRadius: { type: [String, Number], default: '0' },
     },
-};
+}
 </script>
 
 <style lang="scss" scoped>

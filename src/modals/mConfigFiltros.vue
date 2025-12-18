@@ -1,9 +1,5 @@
 <template>
-    <JdModal
-        modal="mConfigFiltros"
-        :buttons="buttons"
-        @button-click="(action) => this[action]()"
-    >
+    <JdModal modal="mConfigFiltros" :buttons="buttons" @button-click="(action) => this[action]()">
         <JdTable
             :columns="columns"
             :datos="modal.cols1.sort((a, b) => a.orden - b.orden) || []"
@@ -25,8 +21,7 @@
                     v-model="item.val"
                     v-if="
                         item.type == 'text' &&
-                        operaciones[item.type].find((a) => a.op == item.op)
-                            ?.show
+                        operaciones[item.type].find((a) => a.op == item.op)?.show
                     "
                 />
 
@@ -35,8 +30,7 @@
                     v-model="item.val"
                     v-if="
                         item.type == 'number' &&
-                        operaciones[item.type].find((a) => a.op == item.op)
-                            ?.show
+                        operaciones[item.type].find((a) => a.op == item.op)?.show
                     "
                 />
 
@@ -44,12 +38,11 @@
                     :lista="item.lista || []"
                     :mostrar="item.mostrar || 'nombre'"
                     :loaded="typeof colsMap[item.id].reload == 'function'"
-                    @reload="runMethod(colsMap[item.id].reload, item)"
+                    @reload="runMethod(item)"
                     v-model="item.val"
                     v-if="
                         item.type == 'select' &&
-                        operaciones[item.type].find((a) => a.op == item.op)
-                            ?.show
+                        operaciones[item.type].find((a) => a.op == item.op)?.show
                     "
                 />
 
@@ -57,19 +50,13 @@
                     <JdInput
                         type="date"
                         v-model="item.val"
-                        v-if="
-                            operaciones[item.type].find((a) => a.op == item.op)
-                                ?.show
-                        "
+                        v-if="operaciones[item.type].find((a) => a.op == item.op)?.show"
                     />
 
                     <JdInput
                         type="date"
                         v-model="item.val1"
-                        v-if="
-                            operaciones[item.type].find((a) => a.op == item.op)
-                                ?.show1
-                        "
+                        v-if="operaciones[item.type].find((a) => a.op == item.op)?.show1"
                     />
                 </div>
 
@@ -77,19 +64,13 @@
                     <JdInput
                         type="datetime-local"
                         v-model="item.val"
-                        v-if="
-                            operaciones[item.type].find((a) => a.op == item.op)
-                                ?.show
-                        "
+                        v-if="operaciones[item.type].find((a) => a.op == item.op)?.show"
                     />
 
                     <JdInput
                         type="datetime-local"
                         v-model="item.val1"
-                        v-if="
-                            operaciones[item.type].find((a) => a.op == item.op)
-                                ?.show1
-                        "
+                        v-if="operaciones[item.type].find((a) => a.op == item.op)?.show1"
                     />
                 </div>
             </template>
@@ -98,16 +79,16 @@
 </template>
 
 <script>
-import JdModal from '../JdModal.vue';
-import JdTable from '../JdTable.vue';
+import JdModal from '../JdModal.vue'
+import JdTable from '../JdTable.vue'
 
-import JdInput from '../inputs/JdInput.vue';
-import JdSelect from '../inputs/JdSelect.vue';
+import JdInput from '../inputs/JdInput.vue'
+import JdSelect from '../inputs/JdSelect.vue'
 
-import { useAuth } from '@/pinia/auth';
-import { useModals } from '@/pinia/modals';
+import { useAuth } from '@/pinia/auth'
+import { useModals } from '@/pinia/modals'
 
-import { jmsg } from '@/utils/swal';
+import { jmsg } from '@/utils/swal'
 
 export default {
     components: {
@@ -201,104 +182,83 @@ export default {
     }),
     computed: {
         colsMap() {
-            return this.modal.cols.reduce(
-                (obj, a) => ((obj[a.id] = a), obj),
-                {}
-            );
+            return this.modal.cols.reduce((obj, a) => ((obj[a.id] = a), obj), {})
         },
     },
     created() {
-        this.modal = this.useModals.mConfigFiltros;
+        this.modal = this.useModals.mConfigFiltros
         this.modal.cols1 = JSON.parse(
             JSON.stringify(this.modal.cols.filter((a) => a.filtrable != false))
-        );
+        )
 
         for (const a of this.modal.cols1) {
             if (a.op) {
-                this.runMethod(this.colsMap[a.id].reload, a);
+                this.runMethod(a)
             }
         }
     },
     methods: {
         elegir(sel, item) {
             if (sel == null) {
-                item.val = null;
-                item.val1 = null;
+                item.val = null
+                item.val1 = null
             }
 
-            if (
-                this.operaciones[item.type].find((a) => a.op == item.op)
-                    ?.show == false
-            ) {
-                item.val = null;
-                item.val1 = null;
+            if (this.operaciones[item.type].find((a) => a.op == item.op)?.show == false) {
+                item.val = null
+                item.val1 = null
             }
         },
         limpiar() {
             for (const a of this.modal.cols1) {
-                a.op = null;
-                a.val = null;
-                a.val1 = null;
+                a.op = null
+                a.val = null
+                a.val1 = null
             }
         },
         checkDatos() {
             for (const a of this.modal.cols1) {
-                if (this.operaciones[a.type] == null) continue;
-                const currentOp = this.operaciones[a.type].find(
-                    (b) => b.op == a.op
-                );
+                if (this.operaciones[a.type] == null) continue
+                const currentOp = this.operaciones[a.type].find((b) => b.op == a.op)
 
                 if (currentOp && currentOp.show) {
                     if (a.val === null || a.val === undefined || a.val === '') {
-                        jmsg(
-                            'error',
-                            `El valor no puede estar vacío en ${a.title}`
-                        );
-                        return true;
+                        jmsg('error', `El valor no puede estar vacío en ${a.title}`)
+                        return true
                     }
                 }
 
                 if (currentOp && currentOp.show1) {
-                    if (
-                        a.val1 === null ||
-                        a.val1 === undefined ||
-                        a.val1 === ''
-                    ) {
-                        jmsg(
-                            'error',
-                            `El valor no puede estar vacío en ${a.title}`
-                        );
-                        return true;
+                    if (a.val1 === null || a.val1 === undefined || a.val1 === '') {
+                        jmsg('error', `El valor no puede estar vacío en ${a.title}`)
+                        return true
                     }
                 }
             }
 
-            return false;
+            return false
         },
         async grabar() {
-            if (this.checkDatos()) return;
+            if (this.checkDatos()) return
 
             // --- ASIGNAR A COLS ORIGINIAL --- //
-            const cols1Map = this.modal.cols1.reduce(
-                (obj, a) => ((obj[a.id] = a), obj),
-                {}
-            );
+            const cols1Map = this.modal.cols1.reduce((obj, a) => ((obj[a.id] = a), obj), {})
 
             for (const a of this.modal.cols) {
-                Object.assign(a, cols1Map[a.id]);
+                Object.assign(a, cols1Map[a.id])
             }
 
             // --- GUARDAR LAS COLUMNAS EN PINIA --- //
-            this.useAuth.saveTableColumns(this.modal.table, this.modal.cols1);
+            this.useAuth.saveTableColumns(this.modal.table, this.modal.cols1)
 
-            this.modal.reload();
-            this.useModals.show.mConfigFiltros = false;
+            this.modal.reload()
+            this.useModals.show.mConfigFiltros = false
         },
 
-        async runMethod(method, item) {
-            item.lista = await method();
-            this.colsMap[item.id].lista = item.lista;
+        async runMethod(item) {
+            item.lista = await this.colsMap[item.id].reload()
+            this.colsMap[item.id].lista = item.lista
         },
     },
-};
+}
 </script>

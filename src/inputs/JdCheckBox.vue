@@ -1,8 +1,8 @@
 <template>
     <label class="container-checkbox" :class="{ disabled: disabled }">
-        <input type="checkbox" v-model="inputModel" v-if="!disabled">
+        <input type="checkbox" v-model="inputModel" v-if="!disabled" />
         <div class="type-check" :class="{ active: inputModel }"></div>
-        
+
         <span :style="{ fontSize: textSize + 'rem' }" v-if="label">{{ label }}</span>
     </label>
 </template>
@@ -39,7 +39,7 @@ export default {
     margin-top: 0;
     background-color: transparent;
 
-    input[type="checkbox"] {
+    input[type='checkbox'] {
         display: none;
     }
 
@@ -54,7 +54,7 @@ export default {
         place-content: center;
 
         &:before {
-            content: "";
+            content: '';
             width: 0.7rem;
             height: 0.7rem;
             transform: scale(0);
@@ -78,4 +78,5 @@ export default {
     }
 
     cursor: default;
-}</style>
+}
+</style>

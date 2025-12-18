@@ -1,5 +1,10 @@
 <template>
-    <JdModal modal="mLogin" :buttons="buttons" @button-click="(action) => this[action]()" :btnClose="false">
+    <JdModal
+        modal="mLogin"
+        :buttons="buttons"
+        @button-click="(action) => this[action]()"
+        :btnClose="false"
+    >
         <div class="container-datos">
             <small>Ingrese sus datos de acceso</small>
 
@@ -69,8 +74,8 @@ export default {
         },
         cancelar() {
             this.$router.replace({ name: 'SignIn' })
-        }
-    }
+        },
+    },
 }
 </script>
 

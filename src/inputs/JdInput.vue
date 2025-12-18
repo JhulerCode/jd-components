@@ -1,6 +1,10 @@
 <template>
-    <label class="container-input"
-        :style="`grid-template-columns: ${label || icon ? 'auto 1fr' : '1fr'}; height: ${height}rem`">
+    <label
+        class="container-input"
+        :style="`grid-template-columns: ${
+            label || icon ? 'auto 1fr' : '1fr'
+        }; height: ${height}rem`"
+    >
         <div class="left" v-if="label || icon">
             <i v-if="icon" :class="icon"></i>
             <span v-if="label">{{ label }}</span>
@@ -9,37 +13,62 @@
 
         <div class="right" :class="{ disabled: disabled }">
             <template v-if="type != 'color'">
-                <input :type="type" :placeholder="placeholder" v-model="inputModel" v-if="!disabled"
-                    :class="{ 'to-right': toRight }" />
+                <input
+                    :type="type"
+                    :placeholder="placeholder"
+                    v-model="inputModel"
+                    v-if="!disabled"
+                    :class="{ 'to-right': toRight }"
+                />
 
                 <template v-else>
                     <template v-if="['text', 'number', 'email', 'hour', 'search'].includes(type)">
-                        <p :class="{ 'to-right-p': toRight }">{{ inputModel }}</p>
+                        <p :class="{ 'to-right-p': toRight }">
+                            {{ inputModel }}
+                        </p>
                     </template>
 
                     <template v-else-if="type == 'date'">
                         <p :class="{ 'to-right-p': toRight }" v-if="inputModel">
-                            {{ dayjs(inputModel).format(useAuth.usuario.format_date || 'DD-MM-YYYY') }}
+                            {{
+                                dayjs(inputModel).format(
+                                    useAuth.usuario.format_date || 'DD-MM-YYYY'
+                                )
+                            }}
                         </p>
                     </template>
 
                     <template v-else-if="type == 'datetime-local'">
                         <p :class="{ 'to-right-p': toRight }" v-if="inputModel">
-                            {{ dayjs(inputModel).format(`${useAuth.usuario.format_date || 'DD-MM-YYYY'} HH:mm:ss`) }}
+                            {{
+                                dayjs(inputModel).format(
+                                    `${useAuth.usuario.format_date || 'DD-MM-YYYY'} HH:mm:ss`
+                                )
+                            }}
                         </p>
                     </template>
                 </template>
             </template>
 
             <template v-else>
-                <input type="text" :placeholder="placeholder" v-model="inputModel" v-if="!disabled" />
+                <input
+                    type="text"
+                    :placeholder="placeholder"
+                    v-model="inputModel"
+                    v-if="!disabled"
+                />
 
                 <div class="disabled" v-else>
                     {{ inputModel }}
                 </div>
 
                 <div class="box-color">
-                    <input type="color" :placeholder="placeholder" v-model="inputModel" v-if="!disabled" />
+                    <input
+                        type="color"
+                        :placeholder="placeholder"
+                        v-model="inputModel"
+                        v-if="!disabled"
+                    />
                 </div>
             </template>
         </div>
@@ -76,7 +105,7 @@ export default {
     data: () => ({
         useAuth: useAuth(),
         dayjs,
-    })
+    }),
 }
 </script>
 
@@ -117,8 +146,8 @@ export default {
             background-color: var(--bg-color);
         }
 
-        input[type="number"]::-webkit-outer-spin-button,
-        input[type="number"]::-webkit-inner-spin-button {
+        input[type='number']::-webkit-outer-spin-button,
+        input[type='number']::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }

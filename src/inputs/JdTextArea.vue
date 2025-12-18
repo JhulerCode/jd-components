@@ -1,5 +1,8 @@
 <template>
-    <label class="container-input" :style="`grid-template-columns: ${label || icon ? 'auto 1fr' : '1fr'}`">
+    <label
+        class="container-input"
+        :style="`grid-template-columns: ${label || icon ? 'auto 1fr' : '1fr'}`"
+    >
         <div class="left" v-if="label || icon">
             <span v-if="label">{{ label }}</span>
             <i v-if="icon" :class="icon"></i>
@@ -7,7 +10,12 @@
         </div>
 
         <div class="right" :class="{ disabled: disabled }">
-            <textarea rows="1" :placeholder="placeholder" v-model="inputModel" v-if="!disabled"></textarea>
+            <textarea
+                rows="1"
+                :placeholder="placeholder"
+                v-model="inputModel"
+                v-if="!disabled"
+            ></textarea>
 
             <template v-else>
                 {{ inputModel }}
@@ -27,7 +35,7 @@ export default {
         tipo: { type: String, default: 'text' },
         placeholder: String,
         disabled: { type: Boolean, default: false },
-        toRight: { type: Boolean, default: false }
+        toRight: { type: Boolean, default: false },
     },
     computed: {
         inputModel: {
@@ -78,7 +86,7 @@ export default {
 
     .right {
         background-color: var(--bg-color);
-        
+
         textarea {
             resize: none;
             width: 100%;

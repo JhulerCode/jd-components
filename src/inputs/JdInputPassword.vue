@@ -7,7 +7,13 @@
         </div>
 
         <div class="right" :class="{ disabled: disabled }">
-            <input :type="tipo_input" :placeholder="placeholder" v-model="inputModel" v-if="!disabled" class="input1" />
+            <input
+                :type="tipo_input"
+                :placeholder="placeholder"
+                v-model="inputModel"
+                v-if="!disabled"
+                class="input1"
+            />
 
             <template v-else>
                 {{ inputModel }}

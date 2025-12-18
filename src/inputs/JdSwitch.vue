@@ -1,6 +1,10 @@
 <template>
     <div class="container-input">
-        <div class="switch" @click="toogle()" :class="{ 'on': inputModel, 'off': !inputModel, 'no-action': disabled }">
+        <div
+            class="switch"
+            @click="toogle()"
+            :class="{ on: inputModel, off: !inputModel, 'no-action': disabled }"
+        >
             <span>{{ inputModel ? 'Sí' : 'No' }}</span>
             <div class="slider"></div>
         </div>
@@ -35,32 +39,30 @@ export default {
 
             this.$emit('change', this.inputModel)
         },
-    }
+    },
 }
 </script>
 
 <style lang="scss" scoped>
-
 .container-input {
     display: flex;
     align-items: center;
     justify-content: left;
     gap: 0.5rem;
-    
+
     .no-action {
         background-color: var(--bg-color2) !important;
         border: var(--border);
         cursor: not-allowed !important;
-   
-        
+
         * {
             cursor: not-allowed !important;
         }
 
-        .slider{
+        .slider {
         }
 
-        span{
+        span {
             color: initial !important;
         }
     }
@@ -72,13 +74,13 @@ export default {
         cursor: pointer;
         background-color: var(--bg-color2);
         border-radius: 1rem;
-        transition: .3s;
+        transition: 0.3s;
 
         .slider {
             position: absolute;
             cursor: pointer;
             background-color: var(--bg-color);
-            transition: .3s;
+            transition: 0.3s;
             border-radius: 50%;
             height: 1rem;
             width: 1rem;
@@ -86,12 +88,12 @@ export default {
             left: 0.25rem;
         }
 
-        span{
+        span {
             position: absolute;
             top: 50%;
             left: 0.25rem;
             font-size: 0.6rem;
-            transition: .3s;
+            transition: 0.3s;
         }
     }
 
