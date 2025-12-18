@@ -8,18 +8,26 @@ on:
 jobs:
   publish-npm:
     runs-on: ubuntu-latest
+
     permissions:
-      id-token: write
       contents: read
+      id-token: write
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 18
           registry-url: https://registry.npmjs.org/
 
-      - run: npm install
-      - run: npm run build --if-present
-      - run: npm publish --access public
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build package
+        run: npm run build --if-present
+
+      - name: Publish to npm
+        run: npm publish --access public
