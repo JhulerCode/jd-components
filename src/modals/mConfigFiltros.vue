@@ -256,6 +256,7 @@ export default {
         },
 
         async runMethod(item) {
+            if (!this.colsMap[item.id].reload) return
             item.lista = await this.colsMap[item.id].reload()
             this.colsMap[item.id].lista = item.lista
         },
