@@ -488,21 +488,12 @@
 </template>
 
 <script>
-// import JdInput from './inputs/JdInput.vue'
-// import JdCheckBox from './inputs/JdCheckBox.vue'
-// import JdButton from './inputs/JdButton.vue'
-// import JdSelect from './inputs/JdSelect.vue'
-// import JdTextArea from './inputs/JdTextArea.vue'
-// import JdSelectQuery from './inputs/JdSelectQuery.vue'
-
-import {
-    JdInput,
-    JdCheckBox,
-    JdButton,
-    JdSelect,
-    JdTextArea,
-    JdSelectQuery,
-} from '@jhuler/components'
+import JdInput from './inputs/JdInput.vue'
+import JdCheckBox from './inputs/JdCheckBox.vue'
+import JdButton from './inputs/JdButton.vue'
+import JdSelect from './inputs/JdSelect.vue'
+import JdTextArea from './inputs/JdTextArea.vue'
+import JdSelectQuery from './inputs/JdSelectQuery.vue'
 
 import { useAuth } from '@/pinia/auth'
 import { useModals } from '@/pinia/modals'
