@@ -238,6 +238,14 @@
                                     />
                                 </template>
 
+                                <template v-if="column.type == 'date'">
+                                    <JdInput
+                                        type="date"
+                                        v-model="a[column.id]"
+                                        :disabled="inputsDisabled"
+                                    />
+                                </template>
+
                                 <template v-if="column.type == 'time'">
                                     <JdInput
                                         type="time"
@@ -257,6 +265,25 @@
                                                 ? $emit('onChange', column.onchange, a)
                                                 : null
                                         "
+                                    />
+                                </template>
+
+                                <template v-if="column.select_query">
+                                    <JdSelectQuery
+                                        v-model="a[column.id]"
+                                        :id="column.select_query.id"
+                                        :mostrar="column.select_query.mostrar"
+                                        @search="
+                                            (txt) => column.select_query.search(txt, a, column)
+                                        "
+                                        @elegir="
+                                            column.select_query.onchange
+                                                ? column.select_query.onchange(a)
+                                                : null
+                                        "
+                                        :spin="a.table_columns[`${column.id}_spin`]"
+                                        :lista="a.table_columns[`${column.id}_lista`]"
+                                        :disabled="a.table_columns[`${column.id}_disabled`]"
                                     />
                                 </template>
 
@@ -295,8 +322,8 @@
                                             a[column.id] < 1
                                                 ? 'anulado'
                                                 : a[column.id] < 2
-                                                ? 'abierto'
-                                                : 'cerrado'
+                                                  ? 'abierto'
+                                                  : 'cerrado'
                                         }`"
                                         v-if="a[column.id] != null"
                                     >
@@ -309,7 +336,7 @@
                                         {{
                                             getNestedProp(a, column.prop)
                                                 ? dayjs(getNestedProp(a, column.prop)).format(
-                                                      useAuth.usuario.format_date
+                                                      useAuth.usuario.format_date,
                                                   )
                                                 : ''
                                         }}
@@ -318,7 +345,7 @@
                                         {{
                                             a[column.id]
                                                 ? dayjs(a[column.id]).format(
-                                                      useAuth.usuario.format_date
+                                                      useAuth.usuario.format_date,
                                                   )
                                                 : ''
                                         }}
@@ -330,7 +357,7 @@
                                         {{
                                             getNestedProp(a, column.prop)
                                                 ? dayjs(getNestedProp(a, column.prop)).format(
-                                                      `${useAuth.usuario.format_date} HH:mm:ss`
+                                                      `${useAuth.usuario.format_date} HH:mm:ss`,
                                                   )
                                                 : ''
                                         }}
@@ -339,7 +366,7 @@
                                         {{
                                             a[column.id]
                                                 ? dayjs(a[column.id]).format(
-                                                      `${useAuth.usuario.format_date} HH:mm:ss`
+                                                      `${useAuth.usuario.format_date} HH:mm:ss`,
                                                   )
                                                 : ''
                                         }}
@@ -410,6 +437,17 @@
 
                         <td class="td-last"></td>
                     </tr>
+
+                    <tr v-if="agregarFila">
+                        <td colspan="100%">
+                            <JdButton
+                                text="Agregar fila"
+                                tipo="3"
+                                small="true"
+                                @click="agregarFila"
+                            />
+                        </td>
+                    </tr>
                 </tbody>
             </table>
 
@@ -450,11 +488,21 @@
 </template>
 
 <script>
-import JdInput from './inputs/JdInput.vue'
-import JdCheckBox from './inputs/JdCheckBox.vue'
-import JdButton from './inputs/JdButton.vue'
-import JdSelect from './inputs/JdSelect.vue'
-import JdTextArea from './inputs/JdTextArea.vue'
+// import JdInput from './inputs/JdInput.vue'
+// import JdCheckBox from './inputs/JdCheckBox.vue'
+// import JdButton from './inputs/JdButton.vue'
+// import JdSelect from './inputs/JdSelect.vue'
+// import JdTextArea from './inputs/JdTextArea.vue'
+// import JdSelectQuery from './inputs/JdSelectQuery.vue'
+
+import {
+    JdInput,
+    JdCheckBox,
+    JdButton,
+    JdSelect,
+    JdTextArea,
+    JdSelectQuery,
+} from '@jhuler/components'
 
 import { useAuth } from '@/pinia/auth'
 import { useModals } from '@/pinia/modals'
@@ -470,6 +518,7 @@ export default {
         JdButton,
         JdSelect,
         JdTextArea,
+        JdSelectQuery,
     },
     props: {
         name: { type: String },
@@ -502,6 +551,8 @@ export default {
         inputsDisabled: { type: Boolean, default: false },
         rowOptions: { type: Array, default: () => [] },
         showResumen: { type: Boolean, default: true },
+
+        agregarFila: { type: Function },
     },
     data: () => ({
         useAuth: useAuth(),
@@ -694,7 +745,7 @@ export default {
         downloadData() {
             downloadExcel(
                 this.columnsSorted.filter((a) => a.show),
-                this.datos
+                this.datos,
             )
         },
         openConfigCols() {
@@ -826,249 +877,253 @@ export default {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    // gap: 1rem;
     max-width: 100%;
+}
 
-    .container-top {
-        margin-bottom: 1rem;
-        // display: grid;
-        // grid-template-columns: 20rem 1fr auto;
+.container-top {
+    margin-bottom: 1rem;
+    // display: grid;
+    // grid-template-columns: 20rem 1fr auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    flex-wrap: wrap;
+
+    .left {
         display: flex;
-        justify-content: space-between;
+        align-items: center;
         gap: 0.5rem 1rem;
         flex-wrap: wrap;
 
-        .left {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem 1rem;
-            flex-wrap: wrap;
-
-            .buscador {
-                width: 20rem;
-            }
-
-            .container-actions {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-            }
+        .buscador {
+            width: 20rem;
         }
 
-        .container-config {
+        .container-actions {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            justify-content: flex-end;
         }
     }
 
-    .resumen {
+    .container-config {
         display: flex;
-        gap: 1rem;
-        margin-top: 0.5rem;
+        align-items: center;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
+}
+
+.container-table {
+    height: 100%;
+    overflow: auto;
+    border-bottom: var(--border);
+
+    .table-cols-resizable {
+        table-layout: fixed;
+        width: fit-content !important;
     }
 
-    .container-table {
-        height: 100%;
-        overflow: auto;
-        border-bottom: var(--border);
+    table {
+        border-collapse: collapse;
+        // border-collapse: separate;
+        border-spacing: 0;
 
-        .table-cols-resizable {
-            table-layout: fixed;
-            width: fit-content !important;
-        }
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            border-radius: 0.5rem 0.5rem 0 0;
 
-        table {
-            border-collapse: collapse;
-            // border-collapse: separate;
-            border-spacing: 0;
+            tr {
+                background-color: var(--bg-color2);
+                border-bottom: var(--border);
+            }
 
-            thead {
-                position: sticky;
-                top: 0;
-                z-index: 2;
-                border-radius: 0.5rem 0.5rem 0 0;
+            th {
+                padding: 0.5rem 0.5rem;
+                text-align: left;
 
-                tr {
-                    background-color: var(--bg-color2);
-                    border-bottom: var(--border);
-                }
-
-                th {
-                    padding: 0.5rem 0.5rem;
-                    text-align: left;
-
-                    * {
-                        color: var(--text-color2);
-                        font-size: 0.9rem;
-                    }
-                }
-
-                .th-numero {
-                    position: sticky;
-                    left: 0;
-                    z-index: 1;
-                    background-color: var(--bg-color2);
-                }
-
-                .th-vfor {
-                    position: relative;
-
-                    .th-vfor-title {
-                        display: flex;
-
-                        i {
-                            margin-right: 0.5rem;
-                        }
-
-                        span {
-                            width: 100%;
-                            white-space: nowrap;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                        }
-                    }
-
-                    .th-vfor-sortable {
-                        cursor: pointer;
-                    }
-
-                    .icon-resize {
-                        position: absolute;
-                        right: 0;
-                        top: 0;
-                        width: 0.5rem;
-                        height: 100%;
-                        cursor: col-resize;
-
-                        &:hover {
-                            border-right: solid 2px var(--primary-color);
-                        }
-                    }
-                }
-
-                .th-vfor-right {
-                    text-align: right;
+                * {
+                    color: var(--text-color2);
+                    font-size: 0.9rem;
                 }
             }
 
-            tbody {
-                tr {
-                    border-bottom: var(--border);
+            .th-numero {
+                position: sticky;
+                left: 0;
+                z-index: 1;
+                background-color: var(--bg-color2);
+            }
 
-                    &:hover {
-                        background-color: var(--bg-color-hover);
+            .th-vfor {
+                position: relative;
 
-                        .td-numero {
-                            background-color: var(--bg-color-hover);
-                        }
+                .th-vfor-title {
+                    display: flex;
+
+                    i {
+                        margin-right: 0.5rem;
+                    }
+
+                    span {
+                        width: 100%;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
                     }
                 }
 
-                .row-selectable {
+                .th-vfor-sortable {
                     cursor: pointer;
                 }
 
-                .row-selected {
-                    background-color: var(--bg-color-selected);
+                .icon-resize {
+                    position: absolute;
+                    right: 0;
+                    top: 0;
+                    width: 0.5rem;
+                    height: 100%;
+                    cursor: col-resize;
 
-                    .td-numero {
-                        background-color: var(--bg-color-selected);
+                    &:hover {
+                        border-right: solid 2px var(--primary-color);
                     }
                 }
+            }
 
-                td {
-                    padding: 0.4rem 0.5rem;
-                    vertical-align: top;
-                }
-
-                .td-numero {
-                    background-color: var(--bg-color);
-                    position: sticky;
-                    left: 0;
-                    z-index: 1;
-                    font-size: 0.85rem;
-                }
-
-                .td-act {
-                    .acts {
-                        display: flex;
-                        gap: 0.3rem;
-                    }
-                }
-
-                .td-vfor {
-                    .estado {
-                        padding: 0.1rem 0.5rem;
-                        width: fit-content;
-                        border-radius: 0.3rem;
-                        font-size: 0.8rem;
-                    }
-
-                    .si {
-                        // background-color: var(--verde);
-                        border: solid 1px var(--verde);
-                    }
-
-                    .no {
-                        // background-color: var(--rojo);
-                        border: solid 1px var(--rojo);
-                    }
-
-                    .anulado {
-                        border: solid 1px var(--rojo);
-                        // background-color: var(--rojo);
-                    }
-
-                    .abierto {
-                        border: solid 1px var(--amarillo);
-                        // background-color: var(--amarillo);
-                    }
-
-                    .cerrado {
-                        border: solid 1px var(--verde);
-                        // background-color: var(--azul);
-                    }
-
-                    .color-box {
-                        width: 2rem;
-                        height: 1rem;
-                    }
-
-                    .currency-box {
-                        display: flex;
-                        justify-content: space-between;
-                    }
-
-                    .img-box {
-                        width: 100%;
-                        height: 3rem;
-
-                        img {
-                            width: 100%;
-                            height: 100%;
-                            object-fit: cover;
-                        }
-                    }
-                }
-
-                .td-vfor-right {
-                    text-align: right;
-                }
-
-                .td-vfor-resizable {
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
+            .th-vfor-right {
+                text-align: right;
             }
         }
 
-        .no-datos {
-            padding: 0.4rem 0.5rem !important;
+        tbody {
+            tr {
+                border-bottom: var(--border);
+
+                &:hover {
+                    background-color: var(--bg-color-hover);
+
+                    .td-numero {
+                        background-color: var(--bg-color-hover);
+                    }
+                }
+            }
+
+            .row-selectable {
+                cursor: pointer;
+            }
+
+            .row-selected {
+                background-color: var(--bg-color-selected);
+
+                .td-numero {
+                    background-color: var(--bg-color-selected);
+                }
+            }
+
+            td {
+                padding: 0.4rem 0.5rem;
+                vertical-align: top;
+            }
+
+            .td-numero {
+                background-color: var(--bg-color);
+                position: sticky;
+                left: 0;
+                z-index: 1;
+                font-size: 0.85rem;
+            }
+
+            .td-act {
+                .acts {
+                    display: flex;
+                    gap: 0.3rem;
+                }
+            }
+
+            .td-vfor {
+                .estado {
+                    padding: 0.1rem 0.5rem;
+                    width: fit-content;
+                    border-radius: 0.3rem;
+                    font-size: 0.8rem;
+                }
+
+                .si {
+                    // background-color: var(--verde);
+                    border: solid 1px var(--verde);
+                }
+
+                .no {
+                    // background-color: var(--rojo);
+                    border: solid 1px var(--rojo);
+                }
+
+                .anulado {
+                    border: solid 1px var(--rojo);
+                    // background-color: var(--rojo);
+                }
+
+                .abierto {
+                    border: solid 1px var(--amarillo);
+                    // background-color: var(--amarillo);
+                }
+
+                .cerrado {
+                    border: solid 1px var(--verde);
+                    // background-color: var(--azul);
+                }
+
+                .color-box {
+                    width: 2rem;
+                    height: 1rem;
+                }
+
+                .currency-box {
+                    display: flex;
+                    justify-content: space-between;
+                }
+
+                .img-box {
+                    width: 100%;
+                    height: 3rem;
+
+                    img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                    }
+                }
+            }
+
+            .td-vfor-right {
+                text-align: right;
+            }
+
+            .td-vfor-resizable {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
         }
     }
+
+    .no-datos {
+        padding: 0.4rem 0.5rem !important;
+    }
+
+    .footer-actions {
+        display: flex;
+        padding: 0.5rem;
+    }
+}
+
+.resumen {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
 }
 
 .row-options-case {
