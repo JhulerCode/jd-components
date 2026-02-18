@@ -268,6 +268,23 @@
                                     />
                                 </template>
 
+                                <template v-if="column.select">
+                                    <JdSelect
+                                        v-model="a[column.id]"
+                                        :id="column.select.id"
+                                        :mostrar="column.select.mostrar"
+                                        @reload="() => column.select.reload(a, column)"
+                                        @elegir="
+                                            column.select.onchange
+                                                ? column.select.onchange(a)
+                                                : null
+                                        "
+                                        :loaded="column.select.loaded"
+                                        :lista="column.select.lista"
+                                        :disabled="a.table_columns[`${column.id}_disabled`]"
+                                    />
+                                </template>
+
                                 <template v-if="column.select_query">
                                     <JdSelectQuery
                                         v-model="a[column.id]"
@@ -443,7 +460,7 @@
                             <JdButton
                                 text="Agregar fila"
                                 tipo="3"
-                                small="true"
+                                :small="true"
                                 @click="agregarFila"
                             />
                         </td>
@@ -458,7 +475,7 @@
 
         <div class="resumen">
             <small>
-                <template v-if="txtBuscar">{{ datosFiltrados.length }} de</template>
+                <template v-if="txtBuscar">{{ datosFiltrados.length }} de </template>
                 <template v-if="showResumen"
                     >{{ cantidadRegistros }} {{ mensajeRegistros }}</template
                 >
@@ -488,12 +505,14 @@
 </template>
 
 <script>
-import JdInput from './inputs/JdInput.vue'
-import JdCheckBox from './inputs/JdCheckBox.vue'
-import JdButton from './inputs/JdButton.vue'
-import JdSelect from './inputs/JdSelect.vue'
-import JdTextArea from './inputs/JdTextArea.vue'
-import JdSelectQuery from './inputs/JdSelectQuery.vue'
+import {
+    JdInput,
+    JdCheckBox,
+    JdButton,
+    JdSelect,
+    JdTextArea,
+    JdSelectQuery,
+} from '@jhuler/components'
 
 import { useAuth } from '@/pinia/auth'
 import { useModals } from '@/pinia/modals'
