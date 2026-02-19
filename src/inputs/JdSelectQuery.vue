@@ -4,8 +4,10 @@
         :style="`grid-template-columns: ${label || icon ? 'auto 1fr' : '1fr'}`"
     >
         <div class="left" v-if="label || icon">
-            <span v-if="label">{{ label }}</span>
             <i v-if="icon" :class="icon"></i>
+
+            <span v-if="label">{{ label }}</span>
+
             <span v-if="nec" class="nec"> *</span>
         </div>
 
@@ -20,11 +22,19 @@
                 />
 
                 <div class="text" v-if="inputModel">
-                    <span :title="setMostrar()">{{ setMostrar() }}</span>
+                    <span :title="mostrarValor">{{ mostrarValor }}</span>
                 </div>
 
                 <div class="actions" v-if="!disabled">
-                    <i class="fa-solid fa-xmark" v-if="inputModel" @click.stop="setNull()"></i>
+                    <i
+                        class="fa-solid fa-xmark hidden"
+                        v-if="inputModel"
+                        @click.stop="setNull()"
+                    ></i>
+
+                    <i
+                        :class="`${isVisible ? 'fa-solid fa-caret-up' : 'fa-solid fa-caret-down'}`"
+                    ></i>
                 </div>
             </div>
 
@@ -34,35 +44,35 @@
                 v-if="isVisible"
                 :class="{ 'lista-is-open': isVisible }"
             >
-                <loadingSpin
+                <LoadingSpin
                     borderRadius="0.2rem"
                     :shadowBack="false"
                     :rellenar="false"
                     v-if="spin"
                 />
 
-                <div v-else>
-                    <div v-if="txtBuscar !== '' && lista.length == 0">
+                <template v-else>
+                    <div v-if="txtBuscar !== '' && lista.length == 0" class="notes">
                         <small>Sin resultados</small>
                     </div>
 
-                    <ul v-if="txtBuscar !== '' && lista.length > 0">
+                    <ul v-if="txtBuscar !== ''">
                         <li v-for="(a, i) in lista" :key="i" @click="elegir(a[id])">
-                            {{ a[mostrar] }}
+                            {{ getNestedProp(a, mostrar) }}
                         </li>
                     </ul>
-                </div>
+                </template>
             </div>
         </div>
     </article>
 </template>
 
 <script>
-import loadingSpin from '../LoadingSpin.vue'
+import { LoadingSpin } from '@jhuler/components'
 
 export default {
     components: {
-        loadingSpin,
+        LoadingSpin,
     },
     props: {
         modelValue: [String, Number],
@@ -70,12 +80,14 @@ export default {
         label: String,
         icon: String,
         nec: { type: Boolean, default: false },
-        spin: { type: Boolean, default: false },
-        lista: { type: Array, default: () => [] },
-        id: { type: String, default: 'id' },
-        mostrar: { type: String, default: 'nombre' },
         placeholder: { type: String, default: null },
         disabled: { type: Boolean, default: false },
+
+        id: { type: String, default: 'id' },
+        mostrar: { type: String, default: 'nombre' },
+
+        spin: { type: Boolean, default: false },
+        lista: { type: Array, default: () => [] },
     },
     computed: {
         inputModel: {
@@ -85,6 +97,21 @@ export default {
             set(newValue) {
                 this.$emit('update:modelValue', newValue)
             },
+        },
+        mostrarValor() {
+            if (
+                this.inputModel !== null &&
+                this.inputModel !== undefined &&
+                this.inputModel !== ''
+            ) {
+                const send = this.lista.find((a) => a[this.id] == this.inputModel)
+
+                if (send) {
+                    return this.getNestedProp(send, this.mostrar)
+                }
+            }
+
+            return ''
         },
     },
     data: () => ({
@@ -137,7 +164,7 @@ export default {
             window.removeEventListener('keydown', this.handleEscapeKey)
         },
         init(id) {
-            if (id) {
+            if (id !== null && id !== undefined) {
                 if (this.lista.length > 0) {
                     this.inputModel = id
                 } else {
@@ -156,7 +183,7 @@ export default {
 
             this.$emit(
                 'elegir',
-                this.lista.find((a) => a[this.id] == id)
+                this.lista.find((a) => a[this.id] == id),
             )
 
             this.ocultar()
@@ -165,6 +192,11 @@ export default {
             this.inputModel = null
 
             this.$emit('elegir', null)
+        },
+        getNestedProp(obj, prop) {
+            const result = prop.split('.').reduce((acc, part) => acc?.[part], obj)
+
+            return result === undefined || result === null ? '' : result
         },
 
         handleInput() {
@@ -182,17 +214,6 @@ export default {
             this.searchTimeOut = setTimeout(() => {
                 this.search()
             }, 500)
-        },
-        setMostrar() {
-            if (this.inputModel) {
-                const send = this.lista.find((a) => a[this.id] == this.inputModel)
-
-                if (send) {
-                    return send[this.mostrar]
-                } else {
-                    return ''
-                }
-            }
         },
         async search() {
             this.$emit('search', this.txtBuscar)
@@ -234,10 +255,7 @@ export default {
             padding: 0 0.5rem;
             border-radius: 0.2rem;
             border: var(--border);
-            // display: flex;
-            // justify-content: space-between;
-            // gap: 0.5rem;
-            // position: relative;
+            background-color: var(--bg-color);
             display: grid;
             grid-template-columns: 1fr auto;
             max-width: 100%;
@@ -254,6 +272,7 @@ export default {
             }
 
             input {
+                width: 100%;
                 background-color: var(--bg-color);
             }
 
@@ -263,8 +282,12 @@ export default {
                 align-items: center;
                 margin-left: 0.5rem;
 
-                i {
+                .fa-xmark {
                     cursor: pointer;
+                }
+
+                .hidden {
+                    opacity: 0;
                 }
             }
         }
@@ -274,6 +297,10 @@ export default {
             position: absolute;
             background-color: var(--bg-color);
             box-shadow: 0 0.5rem 0.7rem var(--shadow-color);
+
+            .notes {
+                padding: 0.4rem 0.5rem;
+            }
 
             ul {
                 width: 100%;
@@ -297,6 +324,18 @@ export default {
 
         .disabled {
             background-color: var(--bg-color2) !important;
+        }
+    }
+
+    &:hover {
+        .right {
+            .se-muestra {
+                .actions {
+                    .hidden {
+                        opacity: 1;
+                    }
+                }
+            }
         }
     }
 }

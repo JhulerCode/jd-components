@@ -1,9 +1,9 @@
 <template>
     <div class="jd-select" :style="`grid-template-columns: ${label || icon ? 'auto 1fr' : '1fr'}`">
         <div class="left" v-if="label || icon">
-            <span v-if="label">{{ label }}</span>
-
             <i v-if="icon" :class="icon"></i>
+
+            <span v-if="label">{{ label }}</span>
 
             <span v-if="nec" class="nec"> *</span>
         </div>
@@ -22,12 +22,18 @@
 
                 <div class="actions" v-if="!disabled">
                     <i
-                        class="fa-solid fa-rotate-right"
+                        class="fa-solid fa-rotate-right hidden"
                         title="Recargar"
                         v-if="loaded"
-                        @click.stop="reload()"
+                        @click.stop="reload"
                     ></i>
-                    <i class="fa-solid fa-xmark" v-if="inputModel" @click.stop="setNull()"></i>
+
+                    <i
+                        class="fa-solid fa-xmark hidden"
+                        v-if="inputModel"
+                        @click.stop="setNull()"
+                    ></i>
+
                     <i
                         :class="`${isVisible ? 'fa-solid fa-caret-up' : 'fa-solid fa-caret-down'}`"
                     ></i>
@@ -47,23 +53,18 @@
                     v-if="lista.length > 10"
                 />
 
+                <div v-if="listaFiltrada.length === 0 || lista.length == 0" class="notes">
+                    <small>Sin resultados</small>
+                </div>
+
                 <ul v-if="!groupBy" class="ul-main">
-                    <li v-if="lista.length === 0"><small>Sin datos</small></li>
-
-                    <li v-else-if="listaFiltrada.length === 0">
-                        <small>Sin resultados</small>
-                    </li>
-
                     <li
-                        v-else
                         v-for="(a, i) in listaFiltrada"
                         :key="i"
                         @click="elegir(a[id])"
                         :class="{ selected: inputModel == a[id] }"
                         class="li-option"
                     >
-                        <!-- @click="elegir(getNestedProp(a, id))"
-                        :class="{ selected: inputModel == getNestedProp(a, id) }" -->
                         {{ getNestedProp(a, mostrar) }}
                     </li>
                 </ul>
@@ -97,13 +98,15 @@ export default {
         label: String,
         icon: String,
         nec: { type: Boolean, default: false },
-        loaded: { type: Boolean, default: false },
-        lista: { type: Array, default: () => [] },
+        placeholder: { type: String, default: null },
+        disabled: { type: Boolean, default: false },
+
         id: { type: String, default: 'id' },
         mostrar: { type: String, default: 'nombre' },
-        placeholder: { type: String, default: null },
         groupBy: { type: String, default: null },
-        disabled: { type: Boolean, default: false },
+
+        lista: { type: Array, default: () => [] },
+        loaded: { type: Boolean, default: false },
     },
     computed: {
         inputModel: {
@@ -230,7 +233,7 @@ export default {
             if (isChanged) {
                 this.$emit(
                     'elegir',
-                    this.lista.find((a) => a[this.id] == id)
+                    this.lista.find((a) => a[this.id] == id),
                 )
             }
 
@@ -253,6 +256,7 @@ export default {
                 .replace(/[\u0300-\u036f]/g, '') // elimina los signos diacríticos
                 .toLowerCase()
         },
+
         reload() {
             this.$emit('reload')
         },
@@ -317,6 +321,10 @@ export default {
                 align-items: center;
                 gap: 0.3rem;
                 margin-left: 0.5rem;
+
+                .hidden {
+                    opacity: 0;
+                }
             }
         }
 
@@ -324,18 +332,17 @@ export default {
             z-index: 3;
             position: absolute;
             background-color: var(--bg-color);
-            // padding: 0.5rem;
-            // width: 200%;
-            // width: fit-content;
             box-shadow: 0 0.5rem 0.7rem var(--shadow-color);
 
             input {
-                border-radius: 0.3rem;
-                border: var(--border);
+                border-bottom: var(--border);
                 padding: 0.3rem 0.5rem;
                 width: 100%;
-                margin-bottom: 0.5rem;
                 background-color: var(--bg-color);
+            }
+
+            .notes {
+                padding: 0.4rem 0.5rem;
             }
 
             .ul-main {
@@ -378,6 +385,18 @@ export default {
 
         .disabled {
             background-color: var(--bg-color2) !important;
+        }
+    }
+
+    &:hover {
+        .right {
+            .se-muestra {
+                .actions {
+                    .hidden {
+                        opacity: 1;
+                    }
+                }
+            }
         }
     }
 }

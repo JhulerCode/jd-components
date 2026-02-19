@@ -273,12 +273,13 @@
                                         v-model="a[column.id]"
                                         :id="column.select.id"
                                         :mostrar="column.select.mostrar"
-                                        @reload="() => column.select.reload(a, column)"
                                         @elegir="
-                                            column.select.onchange
-                                                ? column.select.onchange(a)
+                                            column.select.elegir
+                                                ? (elegido) =>
+                                                      column.select.elegir(elegido, a, column)
                                                 : null
                                         "
+                                        @reload="() => column.select.reload(a, column)"
                                         :loaded="column.select.loaded"
                                         :lista="column.select.lista"
                                         :disabled="a.table_columns[`${column.id}_disabled`]"
@@ -290,13 +291,14 @@
                                         v-model="a[column.id]"
                                         :id="column.select_query.id"
                                         :mostrar="column.select_query.mostrar"
+                                        @elegir="
+                                            column.select_query.elegir
+                                                ? (elegido) =>
+                                                      column.select.elegir(elegido, a, column)
+                                                : null
+                                        "
                                         @search="
                                             (txt) => column.select_query.search(txt, a, column)
-                                        "
-                                        @elegir="
-                                            column.select_query.onchange
-                                                ? column.select_query.onchange(a)
-                                                : null
                                         "
                                         :spin="a.table_columns[`${column.id}_spin`]"
                                         :lista="a.table_columns[`${column.id}_lista`]"

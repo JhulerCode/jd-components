@@ -64,7 +64,7 @@ export default {
 <style lang="scss" scoped>
 .container-input {
     display: grid;
-    grid-template-columns: auto 1fr 2.5rem;
+    grid-template-columns: auto 1fr auto;
     width: 100%;
 
     * {
