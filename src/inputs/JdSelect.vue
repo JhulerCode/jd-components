@@ -210,6 +210,7 @@ export default {
             document.removeEventListener('click', this.handleClickOutside)
             window.removeEventListener('keydown', this.handleEscapeKey)
         },
+
         init(id) {
             if (id !== null && id !== undefined) {
                 if (this.lista.length > 0) {
@@ -244,6 +245,7 @@ export default {
 
             this.$emit('elegir', null)
         },
+
         getNestedProp(obj, prop) {
             const result = prop.split('.').reduce((acc, part) => acc?.[part], obj)
 

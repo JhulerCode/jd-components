@@ -23,38 +23,87 @@
                     />
                 </div>
 
-                <template v-if="rowSelectable1 && !rsUno">
-                    <JdButton text="Todos" tipo="3" @click="selectAll" />
-                    <JdButton text="Ninguno" tipo="3" @click="selectNone" />
-                </template>
+                <small v-if="txtBuscar">{{ datosFiltrados.length }} encontrados </small>
+            </div>
 
-                <div
-                    class="container-actions"
-                    v-if="datos.filter((a) => a.selected == true).length"
-                >
-                    <template v-for="(a, i) in actions" :key="i">
-                        <JdButton
-                            :icon="a.icon"
-                            :text="a.text"
-                            tipo="3"
-                            @click="$emit('actionClick', a.action)"
-                            v-if="useAuth.verifyPermiso(a.permiso)"
-                        />
+            <div class="container-top-center">
+                <div class="container-selected" v-if="rowSelectable1">
+                    <div class="container-info-selected">
+                        <span> {{ cantidadSeleccionados }} {{ mensajeSeleccion }} </span>
+
+                        <i class="fa-solid fa-xmark" @click="toogleSelectItems"></i>
+                    </div>
+
+                    <template v-if="rowSelectable1 && !rsUno">
+                        <JdButton text="Todos" tipo="3" @click="selectAll" />
+                        <JdButton text="Ninguno" tipo="3" @click="selectNone" />
                     </template>
+
+                    <div class="container-actions" ref="selectedContainerActions">
+                        <JdButton
+                            icon="fa-solid fa-gear"
+                            text="Acciones"
+                            tipo="2"
+                            @click="selectedActionsToggle"
+                        />
+
+                        <ul
+                            class="selected-actions-lista"
+                            ref="selectedActionsLista"
+                            v-if="selectedActionsVisible"
+                        >
+                            <template v-for="(a, i) in actions" :key="i">
+                                <li
+                                    @click="$emit('actionClick', a.action)"
+                                    v-if="useAuth.verifyPermiso(a.permiso)"
+                                >
+                                    <i :class="a.icon"></i>
+                                    <span>{{ a.text }}</span>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
             <div class="container-config">
-                <JdButton
-                    :icon="
-                        rowSelectable1 ? 'fa-solid fa-square-check' : 'fa-regular fa-square-check'
-                    "
-                    tipo="2"
-                    @click="toogleSelectItems()"
-                    v-if="configRowSelect"
-                />
+                <template v-if="!rowSelectable1">
+                    <div class="container-meta" v-if="meta">
+                        <span>
+                            {{ (meta.current_page - 1) * meta.per_page + 1 }}-{{
+                                meta.last_page == meta.current_page
+                                    ? meta.total_records
+                                    : meta.current_page * meta.per_page
+                            }}
+                            / {{ meta.total_records }}
+                        </span>
 
-                <template v-if="rowSelectable1 == false">
+                        <JdButton
+                            icon="fa-solid fa-chevron-left"
+                            tipo="2"
+                            title="Recargar"
+                            @click="prevPage"
+                        />
+
+                        <JdButton
+                            icon="fa-solid fa-chevron-right"
+                            tipo="2"
+                            title="Recargar"
+                            @click="nextPage"
+                        />
+                    </div>
+
+                    <JdButton
+                        :icon="
+                            rowSelectable1
+                                ? 'fa-solid fa-square-check'
+                                : 'fa-regular fa-square-check'
+                        "
+                        tipo="2"
+                        @click="toogleSelectItems()"
+                        v-if="configRowSelect"
+                    />
+
                     <JdButton
                         icon="fa-solid fa-file-excel"
                         tipo="2"
@@ -475,22 +524,22 @@
             </div> -->
         </div>
 
-        <div class="resumen">
+        <!-- <div class="resumen">
             <small>
                 <template v-if="txtBuscar">{{ datosFiltrados.length }} de </template>
-                <template v-if="showResumen"
-                    >{{ cantidadRegistros }} {{ mensajeRegistros }}</template
-                >
+                <template v-if="showResumen">
+                    {{ cantidadRegistros }} {{ mensajeRegistros }}
+                </template>
             </small>
             <template v-if="cantidadSeleccionados > 0">
                 <small>|</small>
                 <small> {{ cantidadSeleccionados }} {{ mensajeSeleccion }} </small>
             </template>
-        </div>
+        </div> -->
 
         <transition name="fade">
             <ul
-                class="row-options-case scroll-tiny"
+                class="row-options-case"
                 v-if="optionsCaseItem.i >= 0"
                 @click.stop
                 :id="'options-case-' + this.name"
@@ -536,6 +585,7 @@ export default {
         name: { type: String },
         columns: { type: Array, required: true },
         datos: { type: Array, required: true },
+        meta: { type: Object },
 
         headless: { type: Boolean, default: false },
         height: { type: String, default: 'auto' },
@@ -565,6 +615,7 @@ export default {
         showResumen: { type: Boolean, default: true },
 
         agregarFila: { type: Function },
+        page: { type: Number },
     },
     data: () => ({
         useAuth: useAuth(),
@@ -582,6 +633,8 @@ export default {
         filaInicial: null,
 
         optionsCaseItem: {},
+
+        selectedActionsVisible: false,
     }),
     computed: {
         columnsSorted() {
@@ -653,8 +706,6 @@ export default {
             for (const a of this.columns) {
                 if (a.id != id) a.sortDirection = null
             }
-
-            this.useAuth.saveTableColumns(this.name, this.columns)
 
             // eslint-disable-next-line vue/no-mutating-props
             this.datos.sort((a, b) => {
@@ -788,30 +839,27 @@ export default {
             this.$nextTick(() => {
                 const el = document.getElementById('options-case-' + this.name)
 
+                const rect = document
+                    .getElementById(`button-options-${item.id}`)
+                    .getBoundingClientRect()
+                const rect2 = el.getBoundingClientRect()
+
+                if (screenWidth < rect.left + rect2.width) {
+                    el.style.right = `${screenWidth - rect.right + window.scrollX}px`
+                } else {
+                    el.style.left = `${rect.left + window.scrollX}px`
+                }
+
+                if (screenHeight < rect.bottom + rect2.height) {
+                    el.style.bottom = `${screenHeight - rect.top + window.scrollY + 5}px`
+                } else {
+                    el.style.top = `${rect.bottom + window.scrollY + 5}px`
+                }
+
                 setTimeout(() => {
-                    const rect = document
-                        .getElementById(`button-options-${item.id}`)
-                        .getBoundingClientRect()
-                    const rect2 = el.getBoundingClientRect()
-
-                    if (screenWidth < rect.left + rect2.width) {
-                        el.style.right = `${screenWidth - rect.right + window.scrollX}px`
-                    } else {
-                        el.style.left = `${rect.left + window.scrollX}px`
-                    }
-
-                    if (screenHeight < rect.bottom + rect2.height) {
-                        el.style.bottom = `${screenHeight - rect.top + window.scrollY + 5}px`
-                    } else {
-                        el.style.top = `${rect.bottom + window.scrollY + 5}px`
-                    }
-
                     document.body.addEventListener('click', this.closeOnOutside)
                 }, 0)
             })
-
-            // setTimeout(() => {
-            // }, 10)
         },
         closeOnOutside(event) {
             // this.$nextTick(() => {
@@ -880,6 +928,52 @@ export default {
                     return false
             }
         },
+
+        selectedActionsToggle() {
+            if (this.cantidadSeleccionados == 0) return
+
+            this.selectedActionsVisible = !this.selectedActionsVisible
+
+            if (this.selectedActionsVisible) {
+                this.$nextTick(() => {
+                    const rect = this.$refs.selectedContainerActions.getBoundingClientRect()
+
+                    const el = this.$refs.selectedActionsLista
+                    el.style.top = `${rect.bottom + window.scrollY}px`
+                    el.style.left = `${rect.left + window.scrollX}px`
+                    // el.style.width = `${rect.width}px`
+
+                    setTimeout(() => {
+                        document.addEventListener('click', this.selectedActionsCloseOnOutside)
+                    }, 0)
+                })
+            } else {
+                this.selectedActionsHide()
+            }
+        },
+        selectedActionsHide() {
+            this.selectedActionsVisible = false
+
+            document.removeEventListener('click', this.selectedActionsCloseOnOutside)
+        },
+        selectedActionsCloseOnOutside(event) {
+            const el = this.$refs.selectedActionsLista
+
+            if (el && !el.contains(event.target)) {
+                this.selectedActionsHide()
+            }
+        },
+
+        prevPage() {
+            if (this.meta.current_page == 1) return
+
+            this.$emit('prevPage')
+        },
+        nextPage() {
+            if (this.meta.last_page == this.meta.current_page) return
+
+            this.$emit('nextPage')
+        },
     },
 }
 </script>
@@ -894,35 +988,81 @@ export default {
 
 .container-top {
     margin-bottom: 1rem;
-    // display: grid;
-    // grid-template-columns: 20rem 1fr auto;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    // display: flex;
+    // justify-content: space-between;
     gap: 0.5rem 1rem;
-    flex-wrap: wrap;
+    // flex-wrap: wrap;
 
     .left {
         display: flex;
         align-items: center;
-        gap: 0.5rem 1rem;
+        gap: 0.25rem;
         flex-wrap: wrap;
 
         .buscador {
             width: 20rem;
         }
+    }
 
-        .container-actions {
+    .container-selected {
+        display: flex;
+        justify-content: center;
+        gap: 0.25rem;
+
+        .container-info-selected {
+            background-color: var(--bg-color-selected);
+            padding: 0.5rem 1rem;
+            border-radius: 0.3rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+
+            i {
+                cursor: pointer;
+            }
+        }
+
+        .container-actions {
+            .selected-actions-lista {
+                position: absolute;
+                z-index: 3;
+                max-height: 15rem;
+                overflow-y: auto;
+                background-color: var(--bg-color);
+                box-shadow: 0 0 0.5rem 0.1rem var(--shadow-color);
+                border-radius: 0.3rem;
+
+                li {
+                    cursor: pointer;
+                    padding: 0.5rem 0.8rem;
+                    display: grid;
+                    grid-template-columns: 1.5rem 1fr;
+
+                    &:hover {
+                        background-color: var(--bg-color-hover);
+                    }
+
+                    span {
+                        text-wrap: nowrap;
+                    }
+                }
+            }
         }
     }
 
     .container-config {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.25rem;
         justify-content: flex-end;
+
+        .container-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
     }
 }
 
@@ -1140,11 +1280,11 @@ export default {
 
 .row-options-case {
     position: absolute;
+    z-index: 3;
     user-select: none;
     max-height: 15rem;
     overflow-y: auto;
     background-color: var(--bg-color);
-    z-index: 3;
     box-shadow: 0 0 0.5rem 0.1rem var(--shadow-color);
     border-radius: 0.3rem;
 
