@@ -34,7 +34,7 @@
                         <i class="fa-solid fa-xmark" @click="toogleSelectItems"></i>
                     </div>
 
-                    <template v-if="rowSelectable1 && !rsUno">
+                    <template v-if="!rsUno">
                         <JdButton text="Todos" tipo="3" @click="selectAll" />
                         <JdButton text="Ninguno" tipo="3" @click="selectNone" />
                     </template>
@@ -69,14 +69,17 @@
             <div class="container-config">
                 <template v-if="!rowSelectable1">
                     <div class="container-meta" v-if="meta">
-                        <span>
-                            {{ (meta.current_page - 1) * meta.per_page + 1 }}-{{
-                                meta.last_page == meta.current_page
-                                    ? meta.total_records
-                                    : meta.current_page * meta.per_page
-                            }}
-                            / {{ meta.total_records }}
-                        </span>
+                        <p>
+                            <span v-if="meta.total_records == 0">0 </span>
+                            <span v-else>
+                                {{ (meta.current_page - 1) * meta.per_page + 1 }}-{{
+                                    meta.last_page == meta.current_page
+                                        ? meta.total_records
+                                        : meta.current_page * meta.per_page
+                                }}
+                            </span>
+                            <span> / {{ meta.total_records }}</span>
+                        </p>
 
                         <JdButton
                             icon="fa-solid fa-chevron-left"
